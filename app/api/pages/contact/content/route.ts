@@ -118,7 +118,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ content: tenantContent })
   }
 
-  return NextResponse.json({ error: "Content not found" }, { status: 404 })
+  // If nothing is available, return an error with proper JSON
+  return NextResponse.json(
+    { error: "Content not found", content: null },
+    { status: 404 }
+  )
 }
 
 export async function PUT(request: NextRequest) {
