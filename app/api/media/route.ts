@@ -1,4 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { writeFile, mkdir } from "fs/promises"
+import { join } from "path"
+import { connectToDatabase, isMongoDBConfigured } from "@/lib/db"
+import { Media } from "@/lib/db/models/media.model"
 import { dataStore, generateId } from "@/lib/mock-data"
 import { IMAGE_SIZE_LIMITS, type MediaFile } from "@/lib/db/schemas"
 
@@ -8,6 +12,22 @@ export async function GET(request: NextRequest) {
     const tenantSlug = searchParams.get("tenant") || "kisan-plant-technologies"
     const folder = searchParams.get("folder")
 
+    // Try to use database first
+    if (isMongoDBConfigured()) {
+      try {
+        await connectToDatabase()
+        const query: any = { tenantSlug }
+        if (folder) {
+          query.folder = folder
+        }
+        const media = await Media.find(query).sort({ createdAt: -1 }).lean()
+        return NextResponse.json({ media, limits: IMAGE_SIZE_LIMITS })
+      } catch (dbError) {
+        console.error("Database error, falling back to mock data:", dbError)
+      }
+    }
+
+    // Fallback to mock data
     let media = dataStore.mediaFiles.filter((m) => m.tenantSlug === tenantSlug)
     if (folder) {
       media = media.filter((m) => m.folder === folder)
@@ -52,16 +72,51 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid file type. Allowed: JPG, PNG, GIF, WebP, SVG" }, { status: 400 })
     }
 
-    const mediaFile: MediaFile = {
-      _id: generateId(),
+    // Save file to filesystem
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+    const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`
+    const uploadDir = join(process.cwd(), "public", "uploads")
+    
+    // Ensure upload directory exists
+    try {
+      await mkdir(uploadDir, { recursive: true })
+    } catch (mkdirError) {
+      console.error("Failed to create upload directory:", mkdirError)
+    }
+
+    const filePath = join(uploadDir, filename)
+    await writeFile(filePath, buffer)
+
+    const mediaData = {
       tenantSlug: "kisan-plant-technologies",
-      filename: `${Date.now()}-${file.name}`,
+      filename,
       originalName: file.name,
       mimeType: file.type,
       size: file.size,
-      url: `/uploads/${Date.now()}-${file.name}`,
+      url: `/uploads/${filename}`,
       alt: alt || file.name,
       folder,
+    }
+
+    // Try to save to database first
+    if (isMongoDBConfigured()) {
+      try {
+        await connectToDatabase()
+        const mediaFile = await Media.create(mediaData)
+        return NextResponse.json({
+          media: mediaFile,
+          limits: IMAGE_SIZE_LIMITS,
+        })
+      } catch (dbError) {
+        console.error("Database error, falling back to mock data:", dbError)
+      }
+    }
+
+    // Fallback to mock data
+    const mediaFile: MediaFile = {
+      _id: generateId(),
+      ...mediaData,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
