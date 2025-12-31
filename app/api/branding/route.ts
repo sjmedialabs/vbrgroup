@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { connectToDatabase, isMongoDBConfigured, Branding } from "@/lib/db"
 import { dataStore } from "@/lib/mock-data"
+import { shouldUseMockFallback, handleDatabaseUnavailable } from "@/lib/db/config"
 
 const DEFAULT_TENANT = "kisan-plant-technologies"
 
@@ -18,12 +19,15 @@ export async function GET(request: Request) {
       }
     } catch (error) {
       console.error("MongoDB branding fetch error:", error)
+      handleDatabaseUnavailable(error as Error)
     }
   }
 
-  // Fallback to mock data
-  if (dataStore.branding.tenantSlug === tenant) {
-    return NextResponse.json({ branding: dataStore.branding })
+  // Fallback to mock data (only in development)
+  if (shouldUseMockFallback()) {
+    if (dataStore.branding.tenantSlug === tenant) {
+      return NextResponse.json({ branding: dataStore.branding })
+    }
   }
 
   return NextResponse.json({ error: "Branding not found" }, { status: 404 })
@@ -47,17 +51,20 @@ export async function PUT(request: Request) {
         return NextResponse.json({ branding })
       } catch (error) {
         console.error("MongoDB branding update error:", error)
+        handleDatabaseUnavailable(error as Error)
       }
     }
 
-    // Fallback to mock data
-    if (dataStore.branding.tenantSlug === tenant) {
-      dataStore.branding = {
-        ...dataStore.branding,
-        ...body,
-        updatedAt: new Date(),
+    // Fallback to mock data (only in development)
+    if (shouldUseMockFallback()) {
+      if (dataStore.branding.tenantSlug === tenant) {
+        dataStore.branding = {
+          ...dataStore.branding,
+          ...body,
+          updatedAt: new Date(),
+        }
+        return NextResponse.json({ branding: dataStore.branding })
       }
-      return NextResponse.json({ branding: dataStore.branding })
     }
 
     return NextResponse.json({ error: "Branding not found" }, { status: 404 })

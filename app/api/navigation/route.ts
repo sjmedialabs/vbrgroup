@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { connectToDatabase, isMongoDBConfigured, Navigation } from "@/lib/db"
 import { dataStore } from "@/lib/mock-data"
+import { shouldUseMockFallback, handleDatabaseUnavailable } from "@/lib/db/config"
 
 const DEFAULT_TENANT = "kisan-plant-technologies"
 
@@ -30,20 +31,25 @@ export async function GET(request: Request) {
       }
     } catch (error) {
       console.error("MongoDB navigation fetch error:", error)
+      handleDatabaseUnavailable(error as Error)
     }
   }
 
-  // Fallback to mock data
-  if (location === "header") {
-    return NextResponse.json({ navigation: dataStore.headerNav })
-  } else if (location === "footer") {
-    return NextResponse.json({ navigation: dataStore.footerNav })
+  // Fallback to mock data (only in development)
+  if (shouldUseMockFallback()) {
+    if (location === "header") {
+      return NextResponse.json({ navigation: dataStore.headerNav })
+    } else if (location === "footer") {
+      return NextResponse.json({ navigation: dataStore.footerNav })
+    }
+
+    return NextResponse.json({
+      header: dataStore.headerNav,
+      footer: dataStore.footerNav,
+    })
   }
 
-  return NextResponse.json({
-    header: dataStore.headerNav,
-    footer: dataStore.footerNav,
-  })
+  return NextResponse.json({ error: "Navigation not found" }, { status: 404 })
 }
 
 // PUT - Update navigation
@@ -71,16 +77,19 @@ export async function PUT(request: Request) {
         return NextResponse.json({ navigation })
       } catch (error) {
         console.error("MongoDB navigation update error:", error)
+        handleDatabaseUnavailable(error as Error)
       }
     }
 
-    // Fallback to mock data
-    if (location === "header") {
-      dataStore.headerNav = { ...dataStore.headerNav, ...body, updatedAt: new Date() }
-      return NextResponse.json({ navigation: dataStore.headerNav })
-    } else if (location === "footer") {
-      dataStore.footerNav = { ...dataStore.footerNav, ...body, updatedAt: new Date() }
-      return NextResponse.json({ navigation: dataStore.footerNav })
+    // Fallback to mock data (only in development)
+    if (shouldUseMockFallback()) {
+      if (location === "header") {
+        dataStore.headerNav = { ...dataStore.headerNav, ...body, updatedAt: new Date() }
+        return NextResponse.json({ navigation: dataStore.headerNav })
+      } else if (location === "footer") {
+        dataStore.footerNav = { ...dataStore.footerNav, ...body, updatedAt: new Date() }
+        return NextResponse.json({ navigation: dataStore.footerNav })
+      }
     }
 
     return NextResponse.json({ error: "Invalid location" }, { status: 400 })

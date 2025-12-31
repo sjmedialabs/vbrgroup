@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { connectToDatabase, isMongoDBConfigured, PageContent, Office } from "@/lib/db"
 import { dataStore } from "@/lib/mock-data"
+import { shouldUseMockFallback, handleDatabaseUnavailable } from "@/lib/db/config"
 
 const DEFAULT_TENANT = "kisan-plant-technologies"
 
@@ -107,12 +108,17 @@ export async function GET(request: NextRequest) {
       }
     } catch (error) {
       console.error("MongoDB contact content fetch error:", error)
+      handleDatabaseUnavailable(error as Error)
     }
   }
 
-  // Fallback to mock data
-  const tenantContent = dataStore.pageContents?.[tenant]?.contact || defaultContactContent
-  return NextResponse.json({ content: tenantContent })
+  // Fallback to mock data (only in development)
+  if (shouldUseMockFallback()) {
+    const tenantContent = dataStore.pageContents?.[tenant]?.contact || defaultContactContent
+    return NextResponse.json({ content: tenantContent })
+  }
+
+  return NextResponse.json({ error: "Content not found" }, { status: 404 })
 }
 
 export async function PUT(request: NextRequest) {
@@ -133,15 +139,19 @@ export async function PUT(request: NextRequest) {
         return NextResponse.json({ success: true, content })
       } catch (error) {
         console.error("MongoDB contact content update error:", error)
+        handleDatabaseUnavailable(error as Error)
       }
     }
 
-    // Fallback to mock data
-    if (!dataStore.pageContents) dataStore.pageContents = {}
-    if (!dataStore.pageContents[tenant]) dataStore.pageContents[tenant] = {}
-    dataStore.pageContents[tenant].contact = content
+    // Fallback to mock data (only in development)
+    if (shouldUseMockFallback()) {
+      if (!dataStore.pageContents) dataStore.pageContents = {}
+      if (!dataStore.pageContents[tenant]) dataStore.pageContents[tenant] = {}
+      dataStore.pageContents[tenant].contact = content
+      return NextResponse.json({ success: true, content })
+    }
 
-    return NextResponse.json({ success: true, content })
+    return NextResponse.json({ error: "Database unavailable" }, { status: 503 })
   } catch {
     return NextResponse.json({ error: "Failed to save content" }, { status: 500 })
   }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { connectToDatabase, isMongoDBConfigured, Job } from "@/lib/db"
 import { dataStore, generateId } from "@/lib/mock-data"
 import type { JobOpening } from "@/lib/db/schemas"
+import { shouldUseMockFallback, handleDatabaseUnavailable } from "@/lib/db/config"
 
 const DEFAULT_TENANT = "kisan-plant-technologies"
 
@@ -22,16 +23,20 @@ export async function GET(request: Request) {
       return NextResponse.json({ jobs, total: jobs.length })
     } catch (error) {
       console.error("MongoDB jobs fetch error:", error)
+      handleDatabaseUnavailable(error as Error)
     }
   }
 
-  // Fallback to mock data
-  let jobs = dataStore.jobOpenings.filter((j) => j.tenantSlug === tenant)
-  if (activeOnly) {
-    jobs = jobs.filter((j) => j.isActive)
+  // Fallback to mock data (only in development)
+  if (shouldUseMockFallback()) {
+    let jobs = dataStore.jobOpenings.filter((j) => j.tenantSlug === tenant)
+    if (activeOnly) {
+      jobs = jobs.filter((j) => j.isActive)
+    }
+    return NextResponse.json({ jobs, total: jobs.length })
   }
 
-  return NextResponse.json({ jobs, total: jobs.length })
+  return NextResponse.json({ error: "Database unavailable" }, { status: 503 })
 }
 
 // POST - Create new job opening
@@ -51,22 +56,26 @@ export async function POST(request: Request) {
         return NextResponse.json({ job })
       } catch (error) {
         console.error("MongoDB job create error:", error)
+        handleDatabaseUnavailable(error as Error)
       }
     }
 
-    // Fallback to mock data
-    const newJob: JobOpening = {
-      _id: generateId(),
-      tenantSlug: tenant,
-      ...body,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    // Fallback to mock data (only in development)
+    if (shouldUseMockFallback()) {
+      const newJob: JobOpening = {
+        _id: generateId(),
+        tenantSlug: tenant,
+        ...body,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      dataStore.jobOpenings.push(newJob)
+      return NextResponse.json({ job: newJob })
     }
 
-    dataStore.jobOpenings.push(newJob)
-
-    return NextResponse.json({ job: newJob })
+    return NextResponse.json({ error: "Database unavailable" }, { status: 503 })
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 })
   }
