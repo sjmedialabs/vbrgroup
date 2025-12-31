@@ -44,9 +44,10 @@ export default function Header() {
           isScrolled ? "rounded-none" : "rounded-[20px] max-w-[1400px] mx-auto"
         }`}
       >
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="flex items-center justify-between h-[70px]">
+        <div className="max-w-341.5 mx-auto px-6">
+          <div className="grid-cols-12 items-center h-[100px] w-full grid">
             {/* Brand - Logo on left */}
+            <div className="col-span-2">  
             <Link href="/" className="flex items-center gap-3">
               <Image
                 src={branding?.headerLogo || "/images/logo-header.png"}
@@ -55,23 +56,17 @@ export default function Header() {
                 height={50}
                 className="h-[50px] w-auto"
               />
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[var(--primary-green)] leading-tight tracking-wide">
-                  KISAN PLANT
-                </span>
-                <span className="text-[10px] font-bold text-[var(--text-dark)] leading-tight tracking-wide">
-                  TECHNOLOGIES PVT. LTD
-                </span>
-              </div>
             </Link>
-
+            </div>
+            <div className=" col-span-9">
             {/* Navigation - Right side */}
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav className="hidden lg:flex items-center gap-8 lg:justify-around">
               {navigation?.items.map((item) => (
                 <NavItem
                   key={item.id}
                   href={item.url}
                   label={item.label}
+                  classname={"font-bold"}
                   isActive={
                     pathname === item.url ||
                     pathname.startsWith(item.url + "/") ||
@@ -80,6 +75,7 @@ export default function Header() {
                   hasDropdown={item.children && item.children.length > 0}
                   isDivisions={item.label.toLowerCase() === "divisions"}
                   isAbout={item.label.toLowerCase() === "about"}
+                  
                 >
                   {item.children && item.children.length > 0 && (
                     <Dropdown
@@ -102,6 +98,7 @@ export default function Header() {
               <span className="w-6 h-0.5 bg-[var(--text-dark)]" />
               <span className="w-6 h-0.5 bg-[var(--text-dark)]" />
             </button>
+            </div>
           </div>
 
           {/* Mobile Menu */}
@@ -189,8 +186,8 @@ function NavItem({
     <div className="relative group">
       <Link
         href={href}
-        className={`text-[13px] font-medium py-2 uppercase tracking-wide transition-colors duration-300 ${
-          isActive ? "text-[var(--primary-green)]" : "text-[var(--text-dark)] hover:text-[var(--primary-green)]"
+        className={`text-[13px] font-extrabold py-2 uppercase tracking-wide transition-colors duration-300 ${
+          isActive ? "text-blue-500" : "text-[var(--text-dark)] hover:text-[var(--primary-green)]"
         } ${hasDropdown ? "group-hover:text-[var(--primary-green)]" : ""}`}
       >
         {label}

@@ -31,7 +31,7 @@ export default function HeroCarousel() {
   }
 
   return (
-    <section className="relative h-screen min-h-[600px] overflow-hidden">
+    <section className="relative h-screen min-h-[100vh] overflow-hidden">
       {/* Slides */}
       {slides.map((slide: any, index: number) => (
         <div
@@ -55,9 +55,9 @@ export default function HeroCarousel() {
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-5 z-10">
         {slides.map((slide: any, index: number) => (
           <div key={slide.id} className={`${index === currentSlide ? "block animate-fade-up" : "hidden"}`}>
-            {slide.badge && <p className="text-sm font-medium tracking-[2px] mb-2 opacity-90">{slide.badge}</p>}
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-5 uppercase">{slide.title}</h1>
-            <p className="text-lg font-light opacity-90 max-w-[600px] mx-auto mb-8">{slide.subtitle}</p>
+            {slide.badge && <p className="text-sm font-medium tracking-[2px] opacity-90">{slide.badge}</p>}
+            <h1 className="text-4xl md:text-5xl font-bold leading-tighter tracking-tight uppercase">{slide.title}</h1>
+            <p className="text-lg font-normal opacity-90 max-w-[600px] mx-auto mb-8">{slide.subtitle}</p>
             <div className="flex gap-4 justify-center">
               {slide.ctaText && (
                 <Link
