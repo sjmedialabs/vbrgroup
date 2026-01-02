@@ -11,6 +11,7 @@ import { useWebsite } from "@/lib/contexts/website-context"
 import { ImageUploadField } from "@/components/admin/image-upload-field"
 import { Loader2, Save, Plus, Trash2, GripVertical } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { TestimonialItem } from "@/lib/db/schemas"
 
 interface HeroSlide {
   id: string
@@ -27,7 +28,12 @@ interface Feature {
   title: string
   description: string
 }
-
+interface Items {
+  id: string
+  title: string
+  description: string,
+  image: string,
+}
 interface Division {
   id: string
   name: string
@@ -65,7 +71,7 @@ interface HomePageContent {
     image: string
     videoUrl: string
     features: { id: string; icon: string; title: string; description: string }[]
-    stats: { value: string; label: string }
+    stats: { value: string; label: string, icon: string }
     ctaText: string
     ctaLink: string
   }
@@ -165,6 +171,186 @@ export default function HomePageAdmin() {
       hero: {
         ...content.hero,
         slides: content.hero.slides.map((s) => (s.id === id ? { ...s, [field]: value } : s)),
+      },
+    })
+  }
+
+  const addAboutFeature = () => {
+    if (!content) return
+    setContent({
+      ...content,
+      about: {
+        ...content.about,
+        features: [
+          ...(content.about.features || []),
+          { id: generateId(), icon: "", title: "", description: "" },
+        ],
+      },
+    })
+  }
+
+  const removeAboutFeature = (id: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      about: {
+        ...content.about,
+        features: content.about.features.filter((f) => f.id !== id),
+      },
+    })
+  }
+
+  const updateAboutFeature = (id: string, field: keyof Feature, value: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      about: {
+        ...content.about,
+        features: content.about.features.map((f) => (f.id === id ? { ...f, [field]: value } : f)),
+      },
+    })
+  }
+
+  const addDivision = () => {
+    if (!content) return
+    setContent({
+      ...content,
+      divisions: {
+        ...content.divisions,
+        items: [
+          ...(content.divisions.items || []),
+          { id: generateId(), name: "", subtitle: "", image: "", link: "" },
+        ],
+      },
+    })
+  }
+
+  const removeDivision = (id: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      divisions: {
+        ...content.divisions,
+        items: content.divisions.items.filter((d) => d.id !== id),
+      },
+    })
+  }
+
+  const updateDivision = (id: string, field: keyof Division, value: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      divisions: {
+        ...content.divisions,
+        items: content.divisions.items.map((d) => (d.id === id ? { ...d, [field]: value } : d)),
+      },
+    })
+  }
+
+  const addSustainabilityFeature = () => {
+    if (!content) return
+    setContent({
+      ...content,
+      sustainability: {
+        ...content.sustainability,
+        features: [
+          ...(content.sustainability.features || []),
+          { id: generateId(), icon: "", title: "", description: "" },
+        ],
+      },
+    })
+  }
+
+  const removeSustainabilityFeature = (id: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      sustainability: {
+        ...content.sustainability,
+        features: content.sustainability.features.filter((f) => f.id !== id),
+      },
+    })
+  }
+
+  const updateSustainabilityFeature = (id: string, field: keyof Feature, value: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      sustainability: {
+        ...content.sustainability,
+        features: content.sustainability.features.map((f) => (f.id === id ? { ...f, [field]: value } : f)),
+      },
+    })
+  }
+
+  const addProjectItems = () => {
+    if (!content) return
+    setContent({
+      ...content,
+      projects: {
+        ...content.projects,
+        items: [
+          ...(content.projects.items || []),
+          { id: generateId(), image: "", title: "", description: "", location: "" },
+        ],
+      },
+    })
+  }
+
+  const removeProjectItems = (id: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      projects: {
+        ...content.projects,
+        items: content.projects.items.filter((f) => f.id !== id),
+      },
+    })
+  }
+
+  const updateProjectItems = (id: string, field: keyof Items, value: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      projects: {
+        ...content.projects,
+        items: content.projects.items.map((f) => (f.id === id ? { ...f, [field]: value } : f)),
+      },
+    })
+  }
+
+  const addtestimonialItems = () => {
+    if (!content) return
+    setContent({
+      ...content,
+      testimonials: {
+        ...content.testimonials,
+        items: [
+          ...(content.testimonials.items || []),
+          { id: generateId(), avatar: "", role: "", content: "", rating: 0, name: "" },
+        ],
+      },
+    })
+  }
+
+  const removetestimonialItems = (id: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      testimonials: {
+        ...content.testimonials,
+        items: content.testimonials.items.filter((f) => f.id !== id),
+      },
+    })
+  }
+
+  const updatetestimonialItems = (id: string, field: keyof TestimonialItem, value: any) => {
+    if (!content) return
+    setContent({
+      ...content,
+      testimonials: {
+        ...content.testimonials,
+        items: content.testimonials.items.map((f) => (f.id === id ? { ...f, [field]: value } : f)),
       },
     })
   }
@@ -292,8 +478,16 @@ export default function HomePageAdmin() {
         <TabsContent value="about">
           <Card>
             <CardHeader>
-              <CardTitle>About Section</CardTitle>
-              <CardDescription>Content shown in the about section on home page</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>About Section</CardTitle>
+                  <CardDescription>Content shown in the about section on home page</CardDescription>
+                </div>
+                <Button onClick={addAboutFeature} variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Feature
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -367,6 +561,45 @@ export default function HomePageAdmin() {
                   />
                 </div>
               </div>
+              <div className="space-y-4">
+                <Label className="text-lg font-semibold">Features</Label>
+                {content?.about?.features?.map((feature, index) => (
+                  <div key={feature.id} className="border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="h-5 w-5 text-gray-400" />
+                        <span className="font-medium">Feature {index + 1}</span>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => removeAboutFeature(feature.id)}>
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Title</Label>
+                        <Input
+                          value={feature.title}
+                          onChange={(e) => updateAboutFeature(feature.id, "title", e.target.value)}
+                          placeholder="Feature Title"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <ImageUploadField
+                          label="Icon Image"
+                          value={feature.icon}
+                          onChange={(url) => updateAboutFeature(feature.id, "icon", url)}
+                          tenant={currentWebsite.slug}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {(!content?.about?.features || content.about.features.length === 0) && (
+                  <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
+                    No features added yet. Click "Add Feature" to create one.
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -375,10 +608,18 @@ export default function HomePageAdmin() {
         <TabsContent value="divisions">
           <Card>
             <CardHeader>
-              <CardTitle>Divisions Section</CardTitle>
-              <CardDescription>Manage divisions displayed on home page</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Divisions Section</CardTitle>
+                  <CardDescription>Manage divisions displayed on home page</CardDescription>
+                </div>
+                <Button onClick={addDivision} variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Division
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Badge Text</Label>
@@ -425,6 +666,86 @@ export default function HomePageAdmin() {
                 }
                 tenant={currentWebsite.slug}
               />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>CTA Text</Label>
+                  <Input
+                    value={content?.divisions?.ctaText || ""}
+                    onChange={(e) =>
+                      setContent((prev) =>
+                        prev ? { ...prev, divisions: { ...prev.divisions, ctaText: e.target.value } } : prev,
+                      )
+                    }
+                    placeholder="e.g., Explore our Divisions"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>CTA Link</Label>
+                  <Input
+                    value={content?.divisions?.ctaLink || ""}
+                    onChange={(e) =>
+                      setContent((prev) =>
+                        prev ? { ...prev, divisions: { ...prev.divisions, ctaLink: e.target.value } } : prev,
+                      )
+                    }
+                    placeholder="e.g., /divisions"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label className="text-lg font-semibold">Division Items</Label>
+                {content?.divisions?.items?.map((division, index) => (
+                  <div key={division.id} className="border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="h-5 w-5 text-gray-400" />
+                        <span className="font-medium">Division {index + 1}</span>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => removeDivision(division.id)}>
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Name</Label>
+                        <Input
+                          value={division.name}
+                          onChange={(e) => updateDivision(division.id, "name", e.target.value)}
+                          placeholder="Division Name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Link</Label>
+                        <Input
+                          value={division.link}
+                          onChange={(e) => updateDivision(division.id, "link", e.target.value)}
+                          placeholder="/division-link"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Subtitle</Label>
+                      <Input
+                        value={division.subtitle}
+                        onChange={(e) => updateDivision(division.id, "subtitle", e.target.value)}
+                        placeholder="Short description"
+                      />
+                    </div>
+                    <ImageUploadField
+                      label="Division Image"
+                      value={division.image}
+                      onChange={(url) => updateDivision(division.id, "image", url)}
+                      tenant={currentWebsite.slug}
+                    />
+                  </div>
+                ))}
+                {(!content?.divisions?.items || content.divisions.items.length === 0) && (
+                  <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
+                    No divisions added yet. Click "Add Division" to create one.
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -433,10 +754,18 @@ export default function HomePageAdmin() {
         <TabsContent value="sustainability">
           <Card>
             <CardHeader>
-              <CardTitle>Sustainability Section</CardTitle>
-              <CardDescription>Content for sustainability section</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Sustainability Section</CardTitle>
+                  <CardDescription>Content for sustainability section</CardDescription>
+                </div>
+                <Button onClick={addSustainabilityFeature} variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Feature
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Badge Text</Label>
@@ -497,6 +826,124 @@ export default function HomePageAdmin() {
                   placeholder="https://youtube.com/embed/..."
                 />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>CTA Text</Label>
+                  <Input
+                    value={content?.sustainability?.ctaText || ""}
+                    onChange={(e) =>
+                      setContent((prev) =>
+                        prev ? { ...prev, sustainability: { ...prev.sustainability, ctaText: e.target.value } } : prev,
+                      )
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>CTA Link</Label>
+                  <Input
+                    value={content?.sustainability?.ctaLink || ""}
+                    onChange={(e) =>
+                      setContent((prev) =>
+                        prev ? { ...prev, sustainability: { ...prev.sustainability, ctaLink: e.target.value } } : prev,
+                      )
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4 border p-4 rounded-lg">
+                <Label className="font-semibold">Statistics Highlight</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Value</Label>
+                    <Input
+                      value={content?.sustainability?.stats?.value || ""}
+                      onChange={(e) =>
+                        setContent((prev) =>
+                          prev
+                            ? {
+                              ...prev,
+                              sustainability: {
+                                ...prev.sustainability,
+                                stats: { ...(prev.sustainability.stats || {}), value: e.target.value },
+                              },
+                            }
+                            : prev,
+                        )
+                      }
+                      placeholder="e.g. 50+"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Label</Label>
+                    <Input
+                      value={content?.sustainability?.stats?.label || ""}
+                      onChange={(e) =>
+                        setContent((prev) =>
+                          prev
+                            ? {
+                              ...prev,
+                              sustainability: {
+                                ...prev.sustainability,
+                                stats: { ...(prev.sustainability.stats || {}), label: e.target.value },
+                              },
+                            }
+                            : prev,
+                        )
+                      }
+                      placeholder="e.g. Years of Experience"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label className="text-lg font-semibold">Features</Label>
+                {content?.sustainability?.features?.map((feature, index) => (
+                  <div key={feature.id} className="border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="h-5 w-5 text-gray-400" />
+                        <span className="font-medium">Feature {index + 1}</span>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => removeSustainabilityFeature(feature.id)}>
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Title</Label>
+                        <Input
+                          value={feature.title}
+                          onChange={(e) => updateSustainabilityFeature(feature.id, "title", e.target.value)}
+                          placeholder="Feature Title"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <ImageUploadField
+                          label="Icon Image"
+                          value={feature.icon}
+                          onChange={(url) => updateSustainabilityFeature(feature.id, "icon", url)}
+                          tenant={currentWebsite.slug}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        value={feature.description}
+                        onChange={(e) => updateSustainabilityFeature(feature.id, "description", e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                ))}
+                {(!content?.sustainability?.features || content.sustainability.features.length === 0) && (
+                  <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
+                    No features added yet. Click "Add Feature" to create one.
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -505,8 +952,16 @@ export default function HomePageAdmin() {
         <TabsContent value="projects">
           <Card>
             <CardHeader>
-              <CardTitle>Projects Section</CardTitle>
-              <CardDescription>Featured projects on home page</CardDescription>
+              <div className="flex justify-between">
+                <div>
+                  <CardTitle>Projects Section</CardTitle>
+                  <CardDescription>Featured projects on home page</CardDescription>
+                </div>
+                <Button onClick={addProjectItems} variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Project
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -557,6 +1012,61 @@ export default function HomePageAdmin() {
                   />
                 </div>
               </div>
+              <div className="space-y-4">
+                <Label className="text-lg font-semibold">Projects</Label>
+                {content?.projects?.items?.map((items, index) => (
+                  <div key={items.id} className="border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="h-5 w-5 text-gray-400" />
+                        <span className="font-medium">items {index + 1}</span>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => removeProjectItems(items.id)}>
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Title</Label>
+                        <Input
+                          value={items.title}
+                          onChange={(e) => updateProjectItems(items.id, "title", e.target.value)}
+                          placeholder="project Title"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Location</Label>
+                        <Input
+                          value={items.location}
+                          onChange={(e) => updateProjectItems(items.id, "location", e.target.value)}
+                          placeholder="project Location"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <ImageUploadField
+                          label="Icon Image"
+                          value={items.image}
+                          onChange={(url) => updateProjectItems(items.id, "image", url)}
+                          tenant={currentWebsite.slug}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        value={items.description}
+                        onChange={(e) => updateProjectItems(items.id, "description", e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                ))}
+                {(!content?.projects?.items || content.projects.items.length === 0) && (
+                  <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
+                    No Projects added yet. Click "Add Projects" to create one.
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -565,8 +1075,16 @@ export default function HomePageAdmin() {
         <TabsContent value="testimonials">
           <Card>
             <CardHeader>
-              <CardTitle>Testimonials Section</CardTitle>
-              <CardDescription>Customer testimonials displayed on home page</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Testimonials Section</CardTitle>
+                  <CardDescription>Customer testimonials displayed on home page</CardDescription>
+                </div>
+                <Button onClick={addtestimonialItems} variant="outline" size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Testimonials
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -603,6 +1121,78 @@ export default function HomePageAdmin() {
                     )
                   }
                 />
+              </div>
+              <div className="space-y-4">
+                <Label className="text-lg font-semibold">Testimonials</Label>
+                {content?.testimonials?.items?.map((items, index) => (
+                  <div key={items._id || index} className="border rounded-lg p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="h-5 w-5 text-gray-400" />
+                        <span className="font-medium">items {index + 1}</span>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => removetestimonialItems(items.id)}>
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Name</Label>
+                        <Input
+                          value={items.name}
+                          onChange={(e) => updatetestimonialItems(items.id, "name", e.target.value)}
+                          placeholder="Auther name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Role</Label>
+                        <Input
+                          value={items.role}
+                          onChange={(e) => updatetestimonialItems(items.id, "role", e.target.value)}
+                          placeholder="Auther role"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Rating</Label>
+                        <Input
+                          type="number"
+                          value={items.rating ?? ""}
+                          min={1}
+                          max={5}
+                          onChange={(e) =>
+                            updatetestimonialItems(
+                              items.id,
+                              "rating",
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                          placeholder="Author rating"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <ImageUploadField
+                          label="Avatar"
+                          value={items.avatar}
+                          onChange={(url) => updatetestimonialItems(items.id, "avatar", url)}
+                          tenant={currentWebsite.slug}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        value={items.content}
+                        onChange={(e) => updatetestimonialItems(items.id, "content", e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                ))}
+                {(!content?.testimonials?.items || content.testimonials.items.length === 0) && (
+                  <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
+                    No Testimonials added yet. Click "Add Testimonials" to create one.
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

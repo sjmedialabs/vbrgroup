@@ -562,25 +562,19 @@ export const mockServicesPageContent: ServicesPageContent = {
 }
 
 export const mockServices: Service[] = [
-  {
-    _id: "service-1",
-    tenantSlug: "kisan-plant-technologies",
-    number: "01",
-    title: "Agriculture & Green Solutions",
-    description:
-      "End-to-end agricultural and green development services covering farm planning, plantation, irrigation, soil health, and sustainable landscape execution. We design and manage productive farms, green belts, orchards, and eco-landscapes using scientific agronomy and sustainable practices.",
-    image: "/images/project-1.png",
-    tags: [
-      { id: "tag-1", icon: "/images/sustainability-1.png", label: "Smart Farming" },
-      { id: "tag-2", icon: "/images/sustainability-2.png", label: "Green Infrastructure" },
-      { id: "tag-3", icon: "/images/sustainability-3.png", label: "Plant Supply" },
-      { id: "tag-4", icon: "/images/smart-tech.png", label: "Sustainable Agriculture" },
-    ],
-    order: 1,
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
+   {
+      _id: "service-1",
+      tenantSlug: "kisan-plant-technologies",
+      number: "01",
+      title: "Agriculture & Green Solutions",
+      description: "End-to-end agricultural and green development services.",
+      image: "/images/agreeculture.png",
+      isActive: true,
+      order:1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      tags: [{id: "t1", icon: "/images/smart-farming.png", label: "Smart Farming"}, {id:"t2", icon:"/images/green-infrastructure.png", label:"Green Infrastructure"}, {id:"t3", icon:"/images/plant-supply.png", label:"Plant Supply"},{id:"t4", icon:"/images/sustainable-agriculture.png", label:"Sustainable Agriculture"}],
+    },
   {
     _id: "service-2",
     tenantSlug: "kisan-plant-technologies",

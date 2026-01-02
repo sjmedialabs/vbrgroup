@@ -6,7 +6,7 @@ import SustainabilitySection from "@/components/sustainability-section"
 import ProjectsSection from "@/components/projects-section"
 import TestimonialsSection from "@/components/testimonials-section"
 import Footer from "@/components/footer"
-
+import ContactInfoSection from "@/components/contect-info"
 export default function HomePage() {
   return (
     <>
@@ -17,6 +17,7 @@ export default function HomePage() {
       <SustainabilitySection />
       <ProjectsSection />
       <TestimonialsSection />
+      <ContactInfoSection/>
       <Footer />
     </>
   )

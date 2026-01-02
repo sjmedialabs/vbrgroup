@@ -64,7 +64,7 @@ export default function DivisionsPage() {
       {/* Hero Banner */}
       <section className="relative h-[300px] md:h-[400px] w-full">
         <Image
-          src={content?.hero?.backgroundImage || "/images/banner-4.png"}
+          src={content?.hero?.backgroundImage || "/images/Divisions.png"}
           alt="Divisions"
           fill
           className="object-cover"
@@ -81,35 +81,35 @@ export default function DivisionsPage() {
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Badge */}
           <div className="flex justify-center mb-6">
-            <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-sm font-medium px-4 py-2 rounded-full">
+            <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-base font-bold px-4 py-1 rounded-full">
               <span className="w-2 h-2 bg-white rounded-full"></span>
               {content?.intro?.badge || "Our Divisions"}
             </span>
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-6 whitespace-pre-line">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-1 whitespace-pre-line">
             {content?.intro?.title || "SPECIALIZED DIVISIONS.\nUNIFIED PURPOSE"}
           </h2>
 
           {/* Description */}
-          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-16 leading-relaxed">
+          <p className="text-gray-600 text-center text-lg max-w-4xl mx-auto mb-16 leading-relaxed">
             {content?.intro?.description ||
               "Our divisions operate under specialized brands, each engineered to address a specific sector while sharing one unified mission — to make India's green and agricultural future intelligent, sustainable, and globally competitive."}
           </p>
 
           {/* Divisions Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {content?.divisions?.map((division) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {content?.divisions?.slice(0, 6).map((division) => (
               <Link href={division.link || "#"} key={division.id} className="group">
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 p-4">
                   {/* Division Image */}
                   <div className="relative h-48 overflow-hidden">
                     <Image
                       src={division.image || "/placeholder.svg?height=200&width=300&query=agriculture"}
                       alt={division.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover rounded-2xl group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
 

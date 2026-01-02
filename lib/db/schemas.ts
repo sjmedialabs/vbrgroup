@@ -182,8 +182,8 @@ export interface ProjectCategory {
 
 export interface TestimonialItem {
   id: string
-  quote: string
-  author: string
+  content: string
+  name: string
   role: string
   avatar: string
   rating: number

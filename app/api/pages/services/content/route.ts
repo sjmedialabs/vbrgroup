@@ -18,8 +18,8 @@ const defaultServicesContent = {
       number: "01",
       title: "Agriculture & Green Solutions",
       description: "End-to-end agricultural and green development services.",
-      image: "/images/project-1.png",
-      tags: ["Smart Farming", "Green Infrastructure"],
+      image: "/images/agreeculture.png",
+      tags: [{id: "t1", icon: "/images/smart-farming.png", label: "Smart Farming"}, {id:"t2", icon:"/images/green-infrastructure.png", label:"Green Infrastructure"}, {id:"t3", icon:"/images/plant-supply.png", label:"Plant Supply"},{id:"t4", icon:"/images/sustainable-agriculture.png", label:"Sustainable Agriculture"}],
     },
     {
       id: "srv-2",
@@ -86,9 +86,10 @@ export async function GET(request: NextRequest) {
             title: s.title,
             description: s.description,
             image: s.image,
-            tags: s.tags?.map((t) => t.label) || [],
+            tags: s.tags,
           }))
         }
+        console.log("page content initial",content)
         return NextResponse.json({ content })
       }
     } catch (error) {
@@ -96,7 +97,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const tenantContent = dataStore.pageContents?.[tenant]?.services || defaultServicesContent
+  const tenantContent =  defaultServicesContent
+  console.log(tenantContent)
   return NextResponse.json({ content: tenantContent })
 }
 

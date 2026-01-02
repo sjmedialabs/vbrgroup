@@ -46,7 +46,7 @@ export default function TestimonialsSection() {
 
   return (
     <section ref={sectionRef} className="py-24">
-      <div className="max-w-[1200px] mx-auto px-5">
+      <div className="max-w-300 mx-auto px-5">
         <div className="mb-10">
           <p className="text-[var(--primary-green)] text-sm font-medium mb-2">{badge}</p>
           <h2 className="text-3xl font-bold whitespace-pre-line">
@@ -57,12 +57,12 @@ export default function TestimonialsSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {testimonials.slice(0, 2).map((testimonial: any) => (
+          {testimonials.slice(0, 2).map((testimonial: any, index: number) => (
             <div
-              key={testimonial.id}
-              className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-on-scroll"
+              key={testimonial._id || index}
+              className="bg-white p-8 rounded-2xl border border-gray-100"
             >
-              <p className="text-sm text-[var(--text-gray)] leading-relaxed mb-5 italic">
+              <p className="text-base leading-normal mb-5">
                 &ldquo;{testimonial.content}&rdquo;
               </p>
 
@@ -82,23 +82,23 @@ export default function TestimonialsSection() {
                     alt={testimonial.name}
                     width={50}
                     height={50}
-                    className="w-[50px] h-[50px] rounded-full object-cover"
+                    className="w-12.5 h-12.5 rounded-full object-cover"
                   />
                   <div>
-                    <h5 className="text-base font-semibold text-[var(--name-blue)]">{testimonial.name}</h5>
-                    <p className="text-[13px] text-[var(--text-gray)]">{testimonial.role}</p>
+                    <h5 className="text-lg font-bold text-[var(--name-blue)]">{testimonial.name}</h5>
+                    <p className="text-sm text-gray-700">{testimonial.role}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={handlePrev}
-                    className="w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center hover:border-[var(--primary-green)] hover:text-[var(--primary-green)] transition-colors"
+                    className="w-9 h-9 flex text-gray-400 items-center justify-center hover:border-[var(--primary-green)] hover:text-[var(--primary-green)] transition-colors"
                   >
                     ←
                   </button>
                   <button
                     onClick={handleNext}
-                    className="w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center hover:border-[var(--primary-green)] hover:text-[var(--primary-green)] transition-colors"
+                    className="w-9 h-9 flex items-center text-gray-400 justify-center hover:border-[var(--primary-green)] hover:text-[var(--primary-green)] transition-colors"
                   >
                     →
                   </button>
@@ -109,5 +109,6 @@ export default function TestimonialsSection() {
         </div>
       </div>
     </section>
+    
   )
 }

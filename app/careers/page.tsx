@@ -27,10 +27,10 @@ export default function CareersPage() {
 
       {/* Hero */}
       <section className="relative h-[350px] md:h-[400px] overflow-hidden">
-        <Image src="/images/careers-hero.jpg" alt="Careers" fill className="object-cover" />
+        <Image src="/images/Careers.png" alt="Careers" fill className="object-cover" />
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white px-5 z-10">
-          <h1 className="text-4xl md:text-5xl font-light italic font-serif">Careers That Cultivate Impact</h1>
+          <h1 className="text-4xl md:text-5xl font-light">Careers That Cultivate Impact</h1>
         </div>
       </section>
 
@@ -39,12 +39,12 @@ export default function CareersPage() {
         <div className="max-w-[900px] mx-auto px-5">
           {/* Section Header */}
           <div className="text-center mb-12">
-            <span className="inline-flex items-center gap-1.5 bg-[#e8f5e9] text-[var(--primary-green)] text-sm font-medium px-4 py-1.5 rounded-full mb-4">
-              <span className="w-2 h-2 bg-[var(--primary-green)] rounded-full"></span>
+            <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-base font-bold px-4 py-1 rounded-full mb-8">
+              <span className="w-2 h-2 bg-white rounded-full"></span>
               Careers
             </span>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">MAKE YOUR NEXT CAREER MOVE</h2>
-            <p className="text-muted-foreground max-w-[600px] mx-auto">
+            <p className="text-muted-foreground max-w-[650px] mx-auto">
               Join Kisan Plant Technologies Pvt. Ltd. and be part of a purpose-driven team shaping the future of
               intelligent agriculture, sustainability, and green innovation.
             </p>

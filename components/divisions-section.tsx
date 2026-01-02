@@ -13,12 +13,42 @@ export default function DivisionsSection() {
   const { data } = useSWR<{ content: any }>("/api/pages/home/content?tenant=kisan-plant-technologies", fetcher)
 
   const divisionsContent = data?.content?.divisions
+  const backgroundImage = divisionsContent?.backgroundImage
   const title = divisionsContent?.title || "SPECIALIZED DIVISIONS. UNIFIED PURPOSE"
   const badge = divisionsContent?.badge || "Our Divisions"
   const description =
     divisionsContent?.description ||
     "Our divisions operate under specialized brands, each engineered to address a specific sector while sharing one unified mission — to make India's green and agricultural future intelligent, sustainable, and globally competitive."
-  const divisions = divisionsContent?.items || []
+  const divisions = divisionsContent?.items || [
+    {
+      id: 1,
+      image: "/images/kisan-plantiq.png",
+      name: "Kisan Plantiq",
+      subtitle: "Description here",
+      link: "#",
+    },
+    {
+      id: 2,
+      image: "/images/kisan-plantiq.png",
+      name: "Kisan Plantiq",
+      subtitle: "Description here",
+      link: "#",
+    },
+        {
+      id: 3,
+      image: "/images/kisan-plantiq.png",
+      name: "Kisan Plantiq",
+      subtitle: "Description here",
+      link: "#",
+    },
+    {
+      id: 4,
+      image: "/images/kisan-plantiq.png",
+      name: "Kisan Plantiq",
+      subtitle: "Description here",
+      link: "#",
+    },
+  ]
   const ctaText = divisionsContent?.ctaText || "Explore our Divisions"
   const ctaLink = divisionsContent?.ctaLink || "/divisions"
 
@@ -41,30 +71,37 @@ export default function DivisionsSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-24 bg-[var(--divisions-bg)] text-white" id="divisions">
+    <section ref={sectionRef} className="py-24 bg-[var(--divisions-bg)]" id="divisions"
+    style={
+      {
+        backgroundImage: backgroundImage ? `url('${backgroundImage}')` : undefined,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }
+    }>
       <div className="max-w-[1200px] mx-auto px-5">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-16 items-center">
+        <div className="flex flex-row justify-center gap-4 items-center">
           {/* Info */}
-          <div className="animate-on-scroll">
-            <span className="inline-flex items-center gap-2 bg-white/20 text-white px-4 py-2 rounded-full text-[13px] font-medium mb-4">
-              <span className="w-1.5 h-1.5 bg-white rounded-full" />
+          <div className="animate-on-scroll basis-1/2">
+            <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white px-4 py-1 rounded-full text-lg font-bold mb-4">
+             <span className="w-1.5 h-1.5 bg-white rounded-full" />
               {badge}
             </span>
             <h2 className="text-3xl font-bold mb-5 whitespace-pre-line">{title.replace(". ", ".\n")}</h2>
-            <p className="opacity-80 leading-relaxed mb-8">{description}</p>
+            <p className="opacity-80 text-gray-400 leading-relaxed mb-8 text-xl">{description}</p>
             <Link
               href={ctaLink}
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-[var(--primary-green)] rounded-lg font-medium text-sm hover:bg-white/90 transition-all duration-300"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-[var(--primary-green)] text-white rounded-lg font-medium text-sm hover:bg-white/90 transition-all duration-300"
             >
               {ctaText}
             </Link>
           </div>
 
           {/* Cards */}
-          <div className="grid grid-cols-2 gap-8 animate-on-scroll">
+          <div className="flex flex-wrap gap-3 justify-center items-center animate-on-scroll basis-1/2">
             {divisions.map((division: any) => (
-              <Link href={division.link || "#"} key={division.id} className="text-center group">
-                <div className="w-[150px] h-[150px] mx-auto mb-4 rounded-2xl overflow-hidden">
+              <Link href={division.link || "#"} key={division.id} className="text-center w-50 group bg-white border border-gray-200 rounded-2xl p-2">
+                <div className="w-full h-37.5 mx-auto mb-4 rounded-2xl overflow-hidden">
                   <Image
                     src={division.image || "/placeholder.svg"}
                     alt={division.name}

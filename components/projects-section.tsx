@@ -15,7 +15,22 @@ export default function ProjectsSection() {
   const projectsContent = data?.content?.projects
   const title = projectsContent?.title || "CULTIVATED WITH PRECISION AND INNOVATION"
   const badge = projectsContent?.badge || "Our Projects"
-  const projects = projectsContent?.items || []
+  const projects = projectsContent?.items || [
+    {
+      _id: "1",
+      image: "/images/project-1.png",
+      title: "Project 1",
+      location: "Location 1",
+      description: "Description 1",
+    },
+    {
+      _id: "2",
+      image: "/images/project-2.png",
+      title: "Project 2",
+      location: "Location 2",
+      description: "Description 2",
+    },
+  ]
   const ctaText = projectsContent?.ctaText || "View all Project"
   const ctaLink = projectsContent?.ctaLink || "/projects"
 
@@ -44,14 +59,14 @@ export default function ProjectsSection() {
           <span className="w-1.5 h-1.5 bg-white rounded-full" />
           {badge}
         </span>
-        <h2 className="text-3xl font-extrabold mb-10 uppercase whitespace-pre-line">
+        <h2 className="text-3xl font-extrabold max-w-md mb-10 uppercase whitespace-pre-line">
           {title.replace(" AND ", "\nAND ")}
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {projects.map((project: any) => (
-            <Link href={project.link || "#"} key={project.id} className="animate-on-scroll group">
-              <div className="h-[280px] rounded-[12px_70px_12px_12px] overflow-hidden mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 mb-10">
+          {projects.map((project: any, index: number) => (
+            <div key={project._id || index}>
+              <div className="h-70 rounded-[12px_70px_12px_12px] overflow-hidden mb-4">
                 <Image
                   src={project.image || "/placeholder.svg"}
                   alt={project.title}
@@ -60,10 +75,10 @@ export default function ProjectsSection() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
-              <h4 className="text-base font-semibold text-[var(--primary-green)] mb-1">{project.title}</h4>
-              <p className="text-[13px] font-semibold text-[var(--text-dark)] mb-2">{project.location}</p>
-              <p className="text-[13px] text-[var(--text-gray)] leading-relaxed">{project.description}</p>
-            </Link>
+              <h4 className="text-lg font-bold text-[var(--primary-green)]">{project.title}</h4>
+              <p className="text-[13px] font-semibold mb-1">{project.location}</p>
+              <p className="text-[13px] text-gray-400 leading-tight line-clamp-3">{project.description}</p>
+            </div>
           ))}
         </div>
 

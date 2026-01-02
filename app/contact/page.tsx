@@ -90,38 +90,109 @@ function OfficeCard({ office }: { office: ContactContent["officeAddresses"]["off
     </div>
   )
 }
-
+const defaultContactContent = {
+  hero: {
+    title: "Let's Build the Future Together",
+    backgroundImage: "/images/contact-hero.jpg",
+  },
+  phoneBar: {
+    tollFree: { label: "Toll Free No:", number: "1800-123456-123789" },
+    customerCare: { label: "Customer Care Number:", number: "1800-425-9339" },
+  },
+  officeAddresses: {
+    title: "Our Office Addresses",
+    offices: [
+      {
+        type: "Head Office",
+        name: "VBR Towers, Knoledge Towers",
+        address: "Madhapur, Raidurg,",
+        city: "Telangana - 500008",
+        isHeadOffice: true,
+      },
+      {
+        type: "Branch-1",
+        name: "Hyderabad",
+        address: "Plot No. 45, Tech Park",
+        city: "Hyderabad - 500081",
+        isHeadOffice: false,
+      },
+      {
+        type: "Branch-2",
+        name: "Vishakapatnam",
+        address: "Door No. 12-5-8, MVP Colony",
+        city: "Vishakapatnam - 530017",
+        isHeadOffice: false,
+      },
+      {
+        type: "Branch-3",
+        name: "Vijayawada",
+        address: "Opp. PVP Square, MG Road",
+        city: "Vijayawada - 520010",
+        isHeadOffice: false,
+      },
+      {
+        type: "Branch-4",
+        name: "Karimnagar",
+        address: "Near Clock Tower, Jagtial Road",
+        city: "Karimnagar - 505001",
+        isHeadOffice: false,
+      },
+      {
+        type: "Branch-5",
+        name: "Warangal",
+        address: "Hanamkonda Main Road",
+        city: "Warangal - 506001",
+        isHeadOffice: false,
+      },
+    ],
+  },
+  contactInfo: {
+    mediaEnquiries: { label: "Media Enquiries :", email: "enquiry@kisanplanttechnologies.com" },
+    contactNumbers: { label: "Contact Number:", numbers: ["+91-9848123456", "99491237894"] },
+    emails: { label: "Email:", addresses: ["info@kisanplanttechnologies.com", "Support@kisanplanttechnologies.com"] },
+  },
+  socialMedia: {
+    title: "SOCIAL MEDIA CHANNELS",
+    channels: [
+      { name: "Facebook", url: "#" },
+      { name: "Twitter", url: "#" },
+      { name: "Instagram", url: "#" },
+      { name: "Linkedin", url: "#" },
+      { name: "youtube", url: "#" },
+    ],
+  },
+}
 export default function ContactPage() {
-  const [content, setContent] = useState<ContactContent | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [content, setContent] = useState<ContactContent | null>(defaultContactContent)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    async function fetchContent() {
-      try {
-        const res = await fetch("/api/pages/contact/content")
-        const data = await res.json()
-        setContent(data.content)
-      } catch (error) {
-        console.error("Failed to fetch contact content:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchContent()
-  }, [])
+  // useEffect(() => {
+  //   async function fetchContent() {
+  //     try {
+  //       const res = await fetch("/api/pages/contact/content")
+  //       const data = await res.json()
+  //       setContent(data.content)
+  //     } catch (error) {
+  //       console.error("Failed to fetch contact content:", error)
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+  //   fetchContent()
+  // }, [])
 
   const getSocialIcon = (name: string) => {
     switch (name.toLowerCase()) {
       case "facebook":
-        return <Facebook className="w-5 h-5" />
+        return <Image src="/images/FACEBOOK2.png" alt="Facebook" width={24} height={24} className="w-5 h-5" />
       case "twitter":
-        return <XIcon />
+        return <Image src="/images/TWITTER2.png" alt="TEITTER" width={24} height={24} className="w-5 h-5" />
       case "instagram":
-        return <Instagram className="w-5 h-5" />
+        return <Image src="/images/INSTAGRAM2.png" alt="INSTAGRAM" width={24} height={24} className="w-5 h-5" />
       case "linkedin":
-        return <Linkedin className="w-5 h-5" />
+        return <Image src="/images/LINKEDLN2.png" alt="LINKEDIN" width={24} height={24} className="w-5 h-5" />
       case "youtube":
-        return <Youtube className="w-5 h-5" />
+        return <Image src="/images/YOUTUBE2.png" alt="YOUTUBE" width={24} height={24} className="w-7 h-5" />
       default:
         return null
     }
@@ -147,32 +218,25 @@ export default function ContactPage() {
 
       {/* Hero Section */}
       <section className="relative h-[350px] md:h-[400px] overflow-hidden">
-        <Image src="/images/contact-hero.jpg" alt="Contact Us" fill className="object-cover" />
+        <Image src="/images/contact-banner.png" alt="Contact Us" fill className="object-cover" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-3xl md:text-5xl text-white font-serif italic">{content.hero.title}</h1>
+          <h1 className="text-3xl md:text-5xl text-white">{content.hero.title}</h1>
         </div>
         {/* QR Code placeholder in bottom right */}
         <div className="absolute bottom-4 right-4 bg-white rounded-lg p-2 shadow-lg">
           <div className="w-12 h-12 bg-gray-100 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h2M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-              />
-            </svg>
+           <Image src="/images/YOUTUBE2.png" alt="YOUTUBE" width={24} height={24} className="w-7 h-5" />
           </div>
         </div>
       </section>
 
       {/* Phone Bar */}
       <section className="flex flex-col md:flex-row">
-        <div className="flex-1 bg-[#2d5a27] text-white py-4 px-6 text-center">
+        <div className="flex-1 bg-[#4a8c3f] text-white py-4 px-6 text-center">
           <span className="font-medium">{content.phoneBar.tollFree.label}</span>{" "}
           <span>{content.phoneBar.tollFree.number}</span>
         </div>
-        <div className="flex-1 bg-[#4a8c3f] text-white py-4 px-6 text-center">
+        <div className="flex-1 bg-blue-900 text-white py-4 px-6 text-center">
           <span className="font-medium">{content.phoneBar.customerCare.label}</span>{" "}
           <span>{content.phoneBar.customerCare.number}</span>
         </div>
@@ -248,22 +312,10 @@ export default function ContactPage() {
               <Link
                 key={index}
                 href={channel.url}
-                className="flex items-center gap-2 text-gray-700 hover:text-[var(--primary-green)] transition-colors"
+                className="flex items-center gap-1 text-gray-700 hover:text-[var(--primary-green)] transition-colors"
               >
                 <span
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    channel.name.toLowerCase() === "facebook"
-                      ? "bg-[#1877f2] text-white"
-                      : channel.name.toLowerCase() === "twitter"
-                        ? "bg-black text-white"
-                        : channel.name.toLowerCase() === "instagram"
-                          ? "bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af] text-white"
-                          : channel.name.toLowerCase() === "linkedin"
-                            ? "bg-[#0a66c2] text-white"
-                            : channel.name.toLowerCase() === "youtube"
-                              ? "bg-[#ff0000] text-white"
-                              : "bg-gray-200"
-                  }`}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center`}
                 >
                   {getSocialIcon(channel.name)}
                 </span>

@@ -44,7 +44,7 @@ export default function SustainabilityPage() {
           <Image
             src={
               content?.hero?.backgroundImage ||
-              "/placeholder.svg?height=450&width=1920&query=sustainability green hands plant"
+              "/images/sustainability-banner.png"
             }
             alt="Sustainability"
             fill
@@ -53,7 +53,7 @@ export default function SustainabilityPage() {
           />
         </div>
         <div className="relative z-10 text-center text-white">
-          <h1 className="text-5xl md:text-7xl font-light italic" style={{ fontFamily: "serif" }}>
+          <h1 className="text-5xl md:text-5xl font-light">
             {content?.hero?.title || "Sustainability"}
           </h1>
         </div>
