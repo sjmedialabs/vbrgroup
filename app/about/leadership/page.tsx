@@ -45,7 +45,7 @@ export default function LeadershipPage() {
         <Image src={content?.hero.backgroundImage || ""} alt="Leadership" fill className="object-cover" priority />
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative z-10 h-full flex items-center justify-center pt-20">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-light italic text-white font-serif">
+          <h1 className="text-4xl md:text-5xl font-light text-white">
             {content?.hero.title}
           </h1>
         </div>
@@ -53,12 +53,12 @@ export default function LeadershipPage() {
 
       {/* Main Content Section */}
       <section className="py-16 md:py-24">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div className="max-w-300 mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Left - Text Content */}
             <div className="space-y-6">
               {/* Badge */}
-              <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white text-sm font-medium px-4 py-1.5 rounded-full">
+              <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white text-base font-bold px-4 py-1 rounded-full">
                 <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
                 {content?.content.badge}
               </span>
@@ -79,14 +79,13 @@ export default function LeadershipPage() {
             </div>
 
             {/* Right - Image */}
-            <div className="relative">
-              <div className="relative rounded-3xl overflow-hidden shadow-lg">
+            <div className="relative h-full">
+              <div className="relative rounded-3xl overflow-hidden h-full min-h-[400px]">
                 <Image
                   src={content?.content.image || ""}
                   alt="Leadership"
-                  width={560}
-                  height={620}
-                  className="w-full h-auto object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
             </div>

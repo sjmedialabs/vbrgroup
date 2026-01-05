@@ -25,7 +25,7 @@ export default function Footer() {
   const socialLinks = footerNav?.items.filter((item) => item.group === "social") || []
 
   return (
-    <footer className="bg-[#f5f5f5] pt-16 rounded-3xl mx-12 mb-4" id="contact">
+    <footer className="bg-[#f5f5f5] pt-16 rounded-3xl mx-4 md:mx-12 mb-4" id="contact">
       <div className="max-w-300 mx-auto px-5">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-10">
           {/* Brand */}
@@ -75,7 +75,7 @@ export default function Footer() {
               <br />
               social media channels
             </h4>
-            <ul className="flex flex-col gap-6">
+            <ul className="flex flex-col gap-6 md:items-start items-center">
               {socialLinks.map((social) => (
                 <li key={social.id}>
                   <Link

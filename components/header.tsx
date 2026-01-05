@@ -58,7 +58,7 @@ export default function Header() {
               />
             </Link>
             </div>
-            <div className=" col-span-9">
+            <div className="flex justify-end lg:justify-center col-span-9">
             {/* Navigation - Right side */}
             <nav className="hidden lg:flex items-center gap-8 lg:justify-around">
               {navigation?.items.map((item) => (

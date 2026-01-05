@@ -233,7 +233,7 @@ export default function AboutPage() {
       {/* Our Story Section */}
       <section className="py-20 bg-white">
         <div className="max-w-[1200px] mx-auto px-5">
-          <div className="grid grid-cols-1 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 lg:gap-0 lg:grid-cols-3">
             {/* Left Column - Badge, Title, Features */}
             <div className="col-span-1">
               <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-base px-4 py-1 font-bold rounded-full mb-6">
@@ -291,7 +291,7 @@ export default function AboutPage() {
             </div>
 
             {/* Right Column - Paragraphs */}
-            <div className="space-y-5 col-span-2 ml-16">
+            <div className="space-y-5 col-span-2 lg:ml-16">
               {(pageContent.story?.paragraphs || defaultContent.story.paragraphs).map((para, idx) => (
                 <p key={idx} className="text-gray-600 leading-relaxed text-justify text-sm">
                   {para}
@@ -305,7 +305,7 @@ export default function AboutPage() {
       {/* Info Cards Section */}
       <section className="py-16 bg-white">
         <div className="max-w-[1200px] mx-auto px-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {(pageContent.cards || defaultContent.cards).map((card) => (
               <div
                 key={card.id}
@@ -379,7 +379,7 @@ export default function AboutPage() {
                         backgroundPosition: "center",
                     }}
           >
-            <div className="flex flex-row gap-12 items-center">
+            <div className="flex flex-col md:flex-row gap-12 items-center">
               {/* Left - Text */}
               <div className="text-white basis-2/5 pr-4">
                 <span className="inline-flex items-center font-bold gap-2 bg-white backdrop-blur-sm text-[#2d8a39] text-base px-4 py-1 rounded-full mb-4">
@@ -394,7 +394,7 @@ export default function AboutPage() {
                     "A quick look at our journey through numbers — projects completed, gardens transformed, and clients satisfied"}
                 </p>
               </div>
-               <div>     <div className="h-40 w-px bg-gray-200 basis-1/5"></div></div>
+               <div>     <div className="h-40 w-px bg-gray-200 basis-1/5 hidden md:block"></div></div>
               {/* Right - Stats */}
               <div className="grid grid-cols-2 gap-8 basis-2/5">
                 {(pageContent.growth?.stats || defaultContent.growth.stats).map((stat) => (

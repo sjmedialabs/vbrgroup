@@ -223,9 +223,10 @@ export default function ContactPage() {
           <h1 className="text-3xl md:text-5xl text-white">{content.hero.title}</h1>
         </div>
         {/* QR Code placeholder in bottom right */}
-        <div className="absolute bottom-4 right-4 bg-white rounded-lg p-2 shadow-lg">
-          <div className="w-12 h-12 bg-gray-100 flex items-center justify-center">
-           <Image src="/images/YOUTUBE2.png" alt="YOUTUBE" width={24} height={24} className="w-7 h-5" />
+        <div className="absolute bottom-4 right-4 bg-white rounded-full p-3 shadow-lg">
+          <div className=" flex flex-col items-center justify-center">
+           <Image src="/images/enquiry.png" alt="Enquiry" width={24} height={24} className="w-8 h-8" />
+           <p className="text-[6px]">Enquiry Now</p>
           </div>
         </div>
       </section>

@@ -55,7 +55,7 @@ export default function SustainabilitySection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Content */}
           <div className="animate-on-scroll">
-            <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white px-4 py-2 rounded-full text-[13px] font-medium mb-4">
+            <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white px-4 py-1 rounded-full text-lg font-bold mb-4">
               <span className="w-1.5 h-1.5 bg-white rounded-full" />
               {badge}
             </span>
@@ -89,11 +89,11 @@ export default function SustainabilitySection() {
 
           {/* Images */}
           <div className="relative h-112.5 animate-on-scroll">
-            <div className="absolute top-0 right-2 w-120 h-72 rounded-2xl overflow-hidden shadow-lg">
+            <div className="absolute top-0 right-2 w-full lg:w-120 h-72 rounded-2xl overflow-hidden shadow-lg">
              <Image src={mainImage || "/placeholder.svg"} alt="Green field" fill className="object-cover" />
             </div>
 
-            <div className="absolute top-30 left-0 w-60 h-70 rounded-2xl overflow-hidden shadow-lg">
+            <div className="absolute top-50 md:top-30 -left-2 lg:-left-16 xl:left-0 w-60 h-70 rounded-2xl overflow-hidden shadow-lg">
                <Image src={getYoutubeThumbnail(videoUrl)} alt="Video thumbnail" fill className="object-cover" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-15 h-15 bg-white rounded-full flex items-center justify-center cursor-pointer shadow-xl">
                 <svg width="20" height="20" viewBox="0 0 24 24" className="fill-[var(--primary-green)] ml-1">
@@ -102,7 +102,7 @@ export default function SustainabilitySection() {
               </div>
             </div>
 
-            <div className="absolute bottom-12.5 right-5 bg-white p-5 rounded-2xl shadow-lg text-center w-40">
+            <div className="absolute bottom-12.5 -right-2 md:right-5 bg-white p-5 rounded-2xl shadow-lg text-center w-40">
               <Image
                 src="/images/smart-tech.png"
                 alt="Badge"

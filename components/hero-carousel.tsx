@@ -58,7 +58,7 @@ export default function HeroCarousel() {
             {slide.badge && <p className="text-sm font-medium tracking-[2px] opacity-90">{slide.badge}</p>}
             <h1 className="text-4xl md:text-5xl font-bold leading-tighter tracking-tight uppercase">{slide.title}</h1>
             <p className="text-lg font-normal opacity-90 max-w-[600px] mx-auto mb-8">{slide.subtitle}</p>
-            <div className="flex gap-4 justify-center">
+            {/* <div className="flex gap-4 justify-center">
               {slide.ctaText && (
                 <Link
                   href={slide.ctaLink || "#"}
@@ -70,7 +70,7 @@ export default function HeroCarousel() {
                   {slide.ctaText}
                 </Link>
               )}
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

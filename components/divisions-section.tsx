@@ -79,8 +79,8 @@ export default function DivisionsSection() {
         backgroundPosition: "center",
       }
     }>
-      <div className="max-w-[1200px] mx-auto px-5">
-        <div className="flex flex-row justify-center gap-4 items-center">
+      <div className="max-w-300 mx-auto px-5">
+        <div className="flex flex-col lg:flex-row justify-center gap-4 items-center">
           {/* Info */}
           <div className="animate-on-scroll basis-1/2">
             <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white px-4 py-1 rounded-full text-lg font-bold mb-4">

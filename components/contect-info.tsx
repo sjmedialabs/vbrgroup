@@ -26,10 +26,10 @@ export default function ContactInfoSection() {
                 >
 
                     {/* Content */}
-                    <div className="relative z-10 flex flex-row gap-4 justify-center items-center px-16 py-20 text-white">
+                    <div className="relative z-10 flex flex-wrap lg:flex-nowrap lg:flex-row gap-4 md:justify-center items-center px-16 py-20 text-white">
 
                         {/* EMAILS */}
-                        <div className="flex gap-4 items-start basis-1/4">
+                        <div className="flex gap-4 items-start md:basis-1/4">
 
                             <div>
                                 <h4 className="font-semibold text-lg mb-1 flex flex-row items-center gap-1"><Image
@@ -46,10 +46,10 @@ export default function ContactInfoSection() {
                                 ))}
                             </div>
                         </div>
-                        <div className=" basis-1/8 flex justify-center items-center">
-                            <div className="h-20 w-px bg-gray-400"></div></div>
+                        <div className=" basis-1/8 md:flex justify-center hidden items-center">
+                            <div className="h-20 w-px bg-gray-400 "></div></div>
                         {/* PHONES */}
-                        <div className="flex gap-4 items-start px-8 basis-1/4">
+                        <div className="flex gap-4 items-start md:px-8 md:basis-1/4">
                             <div>
                                 <h4 className="font-semibold text-lg mb-1 flex flex-row items-center gap-1"><Image
                                     src="/images/contacthead.png"
@@ -65,10 +65,10 @@ export default function ContactInfoSection() {
                                 ))}
                             </div>
                         </div>
-                        <div className=" basis-1/8 flex justify-center items-center">
-                            <div className="h-20 w-px bg-gray-400"></div></div>
+                        <div className=" basis-1/8 md:flex justify-center hidden items-center">
+                            <div className="h-20 w-px bg-gray-400  md:block"></div></div>
                         {/* ADDRESS */}
-                        <div className="flex gap-4 items-start basis-1/4">
+                        <div className="flex gap-4 items-start md:basis-1/4">
                             <div>
                                 <h4 className="font-semibold text-lg mb-1 flex flex-row items-center gap-1">
                                     <Image
