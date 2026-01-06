@@ -9,12 +9,20 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Allow serving static files from public/uploads after build
+  // Disable Vercel Analytics for self-hosted deployment
+  experimental: {
+    webVitalsAttribution: [],
+  },
+  // Allow serving static files after build
   async rewrites() {
     return [
       {
         source: '/uploads/:path*',
-        destination: '/api/serve-upload/:path*',
+        destination: '/api/serve-static/uploads/:path*',
+      },
+      {
+        source: '/images/:path*',
+        destination: '/api/serve-static/images/:path*',
       },
     ]
   },

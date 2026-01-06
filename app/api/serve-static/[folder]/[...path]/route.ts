@@ -5,14 +5,15 @@ import { existsSync } from 'fs'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: { folder: string; path: string[] } }
 ) {
   try {
-    const filePath = join(process.cwd(), 'public', 'uploads', ...params.path)
+    const { folder, path } = params
+    const filePath = join(process.cwd(), 'public', folder, ...path)
     
-    // Security check: ensure the resolved path is within the uploads directory
-    const uploadsDir = join(process.cwd(), 'public', 'uploads')
-    if (!filePath.startsWith(uploadsDir)) {
+    // Security check: ensure the resolved path is within the public directory
+    const publicDir = join(process.cwd(), 'public')
+    if (!filePath.startsWith(publicDir)) {
       return new NextResponse('Forbidden', { status: 403 })
     }
 
@@ -33,6 +34,7 @@ export async function GET(
       'gif': 'image/gif',
       'webp': 'image/webp',
       'svg': 'image/svg+xml',
+      'ico': 'image/x-icon',
     }
     
     const contentType = contentTypeMap[ext || ''] || 'application/octet-stream'
@@ -44,7 +46,7 @@ export async function GET(
       },
     })
   } catch (error) {
-    console.error('Error serving upload:', error)
+    console.error('Error serving static file:', error)
     return new NextResponse('Internal Server Error', { status: 500 })
   }
 }

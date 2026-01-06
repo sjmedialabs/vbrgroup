@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       if (pageContent) {
         // Merge offices from database if available
         const content = pageContent.content as typeof defaultContactContent
-        if (offices.length > 0) {
+        if (offices.length > 0 && content.officeAddresses) {
           content.officeAddresses.offices = offices.map((office) => ({
             type: office.type === "head" ? "Head Office" : office.name,
             name: office.type === "head" ? office.address : office.city,
