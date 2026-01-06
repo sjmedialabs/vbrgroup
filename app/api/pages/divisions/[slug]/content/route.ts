@@ -1,34 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { connectToDatabase, isMongoDBConfigured, Division } from "@/lib/db"
 
-interface ServiceTab {
-  id: string
-  title: string
-  number: string
-  heading: string
-  description: string[]
-  image: string
-}
+const DEFAULT_TENANT = "kisan-plant-technologies"
 
-interface DivisionDetailContent {
-  hero: {
-    title: string
-    subtitle: string
-    backgroundImage: string
-  }
-  about: {
-    badge: string
-    title: string
-    description: string[]
-  }
-  services: {
-    badge: string
-    title: string
-    subtitle: string
-    tabs: ServiceTab[]
-  }
-}
-
-const divisionContents: Record<string, DivisionDetailContent> = {
+// Fallback content for when database is not configured
+const fallbackContent: Record<string, any> = {
   "kisan-plantiq": {
     hero: {
       title: "Intelligent Greens.\nSustainable Tomorrow.",
@@ -39,75 +15,69 @@ const divisionContents: Record<string, DivisionDetailContent> = {
       badge: "About KISAN PLANTIQ",
       title: "Intelligent Greens. Sustainable Tomorrow.",
       description: [
-        "We specialize in the large-scale supply of Agro Forestry Plants, Fruit Plants, and Landscaping Greens, catering to both urban infrastructure projects and agriculture development initiatives across India.",
-        "Unlike traditional suppliers, Kisan PLANTIQ integrates innovation into every green solution. While we produce select premium species in our own facilities, we've also built strategic partnerships with India's most reputed nurseries, ensuring consistent quality and an unmatched variety of plant species.",
+        "At Kisan PLANTIQ, we don't just supply plants — we deliver living assets equipped with intelligence, sustainability, and a vision for greener tomorrows. Operating across India, we're your trusted partner in transforming urban and rural landscapes with high-quality plant supply, strategic nursery partnerships, and cutting-edge agro solutions.",
+        "From supplying large-scale plants to building smart plantation projects and offering 24×7 customer support, we combine experience with innovation to serve government bodies, corporates, and communities nationwide."
       ],
     },
     services: {
       badge: "Our Services",
       title: "End-to-End Plant Supply\n& Green Solutions\nAcross India",
-      subtitle:
-        "At Kisan PLANTIQ, we go beyond being a traditional plant supplier — we deliver intelligent, reliable, and technology-enabled green solutions across all verticals of India's growing ecosystem.",
+      subtitle: "At Kisan PLANTIQ, we go beyond being a traditional plant supplier — we deliver intelligent, reliable, and technology-enabled green solutions across all verticals of India's growing ecosystem.",
       tabs: [
         {
-          id: "nationwide-plant-supply",
+          id: "plant-supply",
           title: "Nationwide Plant Supply",
           number: "01",
-          heading: "National wide\nPlant Supply",
+          heading: "Nationwide\nPlant Supply",
           description: [
-            "We provide a comprehensive range of Agro Forestry Plants, Fruit Plants, Ornamental, and Landscape Plants, sourced through our own production units and a vast network of India's most reputed nurseries.",
-            "Our supply chain ensures quality consistency, on-time delivery, and custom project-based sourcing anywhere across India.",
-            "From government projects to private developments — we deliver nature with precision.",
+            "We are India's trusted partner for large-scale plant supply operations — offering a seamless experience from procurement to delivery, backed by quality assurance and logistical precision.",
+            "Serving corporates, government bodies, municipalities, and infrastructure projects across the nation."
           ],
-          image: "/images/plantiq-service-1.png",
+          image: "/images/project-1.png",
         },
         {
-          id: "strategic-nursery-partnerships",
+          id: "nursery-partnerships",
           title: "Strategic Nursery Partnerships",
           number: "02",
           heading: "Strategic Nursery\nPartnerships",
           description: [
-            "We've built long-term partnerships with India's most trusted and certified nurseries to ensure premium quality plants across all categories.",
-            "This network allows us to source rare species, fulfill bulk orders, and maintain consistent supply throughout the year.",
-            "Our partnerships span across multiple states, giving us unmatched reach and reliability.",
+            "We collaborate with government-approved nurseries and private growers to ensure a steady, scalable, and quality-controlled supply chain.",
+            "Our partnerships span multiple states, enabling us to source diverse species and cater to region-specific requirements."
           ],
-          image: "/images/plantiq-service-2.png",
+          image: "/images/project-2.png",
         },
         {
-          id: "smart-agro-urban-greening",
+          id: "smart-greening",
           title: "Smart Agro & Urban Greening Projects",
           number: "03",
-          heading: "Smart Agro & Urban\nGreening Projects",
+          heading: "Smart Agro &\nUrban Greening Projects",
           description: [
-            "We execute end-to-end greening projects for urban landscapes, highways, industrial campuses, and residential developments.",
-            "Our smart agro solutions integrate technology with traditional farming practices for maximum efficiency and sustainability.",
-            "From concept to completion, we handle planning, procurement, planting, and maintenance.",
+            "Beyond supplying plants, we design and execute turnkey plantation projects — from public parks and corporate campuses to highway beautification and urban forests.",
+            "Leveraging data-driven species selection, irrigation planning, and maintenance protocols."
           ],
-          image: "/images/plantiq-service-3.png",
+          image: "/images/project-3.png",
         },
         {
-          id: "customer-care-support",
-          title: "24*7 Customer Care & Expert Support",
+          id: "customer-support",
+          title: "24×7 Customer Care & Expert Support",
           number: "04",
-          heading: "24*7 Customer Care\n& Expert Support",
+          heading: "24×7 Customer Care\n& Expert Support",
           description: [
-            "Our dedicated support team is available round-the-clock to address queries, provide guidance, and resolve issues promptly.",
-            "Expert horticulturists and agronomists are on standby to offer technical advice and best practices.",
-            "We believe in building lasting relationships through exceptional service and support.",
+            "Our dedicated team provides round-the-clock support — from consultation and site surveys to post-delivery care and troubleshooting.",
+            "We ensure every stakeholder — from project managers to ground teams — is equipped with knowledge and assistance."
           ],
-          image: "/images/plantiq-service-4.png",
+          image: "/images/project-4.png",
         },
         {
-          id: "knowledge-training",
+          id: "training",
           title: "Knowledge & Training Initiatives",
           number: "05",
-          heading: "Knowledge & Training\nInitiatives",
+          heading: "Knowledge &\nTraining Initiatives",
           description: [
-            "We conduct regular training programs, workshops, and knowledge-sharing sessions for farmers, nursery owners, and agricultural professionals.",
-            "Our initiatives cover modern cultivation techniques, sustainable practices, and market-ready production methods.",
-            "Empowering India's green workforce with skills and knowledge for a sustainable future.",
+            "We empower farmers, nursery operators, and contractors with training programs focused on modern plantation techniques, pest management, and sustainability practices.",
+            "Building capacity at the grassroots level to ensure long-term ecological and economic impact."
           ],
-          image: "/images/plantiq-service-5.png",
+          image: "/images/project-5.png",
         },
       ],
     },
@@ -122,8 +92,8 @@ const divisionContents: Record<string, DivisionDetailContent> = {
       badge: "About KISAN AGRIQ",
       title: "Smart Agriculture. Intelligent Farming.",
       description: [
-        "Kisan AGRIQ is the corporate agriculture intelligence division, bringing cutting-edge technology to farming.",
-        "We provide data-driven insights, precision farming solutions, and AI-powered agricultural management systems.",
+        "Kisan AGRIQ represents the future of agriculture — where technology meets tradition to create sustainable, profitable, and scalable farming solutions.",
+        "We provide corporate agriculture intelligence services that help organizations optimize their agricultural operations."
       ],
     },
     services: {
@@ -137,8 +107,8 @@ const divisionContents: Record<string, DivisionDetailContent> = {
           number: "01",
           heading: "Precision\nFarming",
           description: [
-            "Advanced sensors and IoT devices for real-time crop monitoring.",
-            "Data-driven decision making for optimal resource utilization.",
+            "Advanced agricultural solutions powered by data analytics and IoT.",
+            "Optimize crop yields and reduce waste through intelligent farming practices."
           ],
           image: "/images/division-agriq.png",
         },
@@ -147,14 +117,70 @@ const divisionContents: Record<string, DivisionDetailContent> = {
   },
 }
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { slug: string } }
+) {
+  const { slug } = params
+  const { searchParams } = new URL(request.url)
+  const tenant = searchParams.get("tenant") || DEFAULT_TENANT
 
-  const content = divisionContents[slug]
-
-  if (!content) {
-    return NextResponse.json({ error: "Division not found" }, { status: 404 })
+  if (!isMongoDBConfigured()) {
+    const content = fallbackContent[slug]
+    if (!content) {
+      return NextResponse.json({ error: "Division not found" }, { status: 404 })
+    }
+    return NextResponse.json({ content })
   }
 
-  return NextResponse.json({ content })
+  try {
+    await connectToDatabase()
+    const division = await Division.findOne({
+      tenantSlug: tenant,
+      slug,
+      isActive: true,
+    }).lean()
+
+    if (!division || !division.pageContent) {
+      return NextResponse.json({ error: "Division not found" }, { status: 404 })
+    }
+
+    return NextResponse.json({ content: division.pageContent })
+  } catch (error) {
+    console.error("Error fetching division content:", error)
+    return NextResponse.json({ error: "Failed to fetch division content" }, { status: 500 })
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { slug: string } }
+) {
+  const { slug } = params
+  const { searchParams } = new URL(request.url)
+  const tenant = searchParams.get("tenant") || DEFAULT_TENANT
+
+  if (!isMongoDBConfigured()) {
+    return NextResponse.json({ error: "Database not configured" }, { status: 500 })
+  }
+
+  try {
+    const { content } = await request.json()
+
+    await connectToDatabase()
+    const division = await Division.findOneAndUpdate(
+      { tenantSlug: tenant, slug },
+      { pageContent: content },
+      { new: true }
+    )
+
+    if (!division) {
+      return NextResponse.json({ error: "Division not found" }, { status: 404 })
+    }
+
+    return NextResponse.json({ success: true, content: division.pageContent })
+  } catch (error) {
+    console.error("Error updating division content:", error)
+    return NextResponse.json({ error: "Failed to update division content" }, { status: 500 })
+  }
 }

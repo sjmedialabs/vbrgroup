@@ -13,6 +13,34 @@ export interface IDivisionService {
   description: string
 }
 
+export interface IServiceTab {
+  id: string
+  title: string
+  number: string
+  heading: string
+  description: string[]
+  image: string
+}
+
+export interface IDivisionPageContent {
+  hero: {
+    title: string
+    subtitle: string
+    backgroundImage: string
+  }
+  about: {
+    badge: string
+    title: string
+    description: string[]
+  }
+  services: {
+    badge: string
+    title: string
+    subtitle: string
+    tabs: IServiceTab[]
+  }
+}
+
 export interface IDivision extends Document {
   tenantSlug: string
   slug: string
@@ -29,6 +57,7 @@ export interface IDivision extends Document {
     value: string
     label: string
   }[]
+  pageContent?: IDivisionPageContent
   order: number
   isActive: boolean
   createdAt: Date
@@ -54,6 +83,40 @@ const DivisionServiceSchema = new Schema<IDivisionService>(
   { _id: false },
 )
 
+const ServiceTabSchema = new Schema<IServiceTab>(
+  {
+    id: String,
+    title: String,
+    number: String,
+    heading: String,
+    description: [String],
+    image: String,
+  },
+  { _id: false },
+)
+
+const DivisionPageContentSchema = new Schema(
+  {
+    hero: {
+      title: String,
+      subtitle: String,
+      backgroundImage: String,
+    },
+    about: {
+      badge: String,
+      title: String,
+      description: [String],
+    },
+    services: {
+      badge: String,
+      title: String,
+      subtitle: String,
+      tabs: [ServiceTabSchema],
+    },
+  },
+  { _id: false },
+)
+
 const DivisionSchema = new Schema<IDivision>(
   {
     tenantSlug: { type: String, required: true, index: true },
@@ -73,6 +136,7 @@ const DivisionSchema = new Schema<IDivision>(
         label: String,
       },
     ],
+    pageContent: DivisionPageContentSchema,
     order: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
   },

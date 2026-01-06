@@ -15,12 +15,14 @@ import {
   Palette,
   Navigation,
   ChevronDown,
+  ChevronRight,
   Wrench,
   Home,
   Users,
   FolderKanban,
   Leaf,
   Phone,
+  Plus,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -39,7 +41,6 @@ const pagesNavigation = [
   { name: "Home", href: "/admin/dashboard/pages/home", icon: Home },
   { name: "About", href: "/admin/dashboard/pages/about", icon: Users },
   { name: "Services", href: "/admin/dashboard/pages/services", icon: Wrench },
-  { name: "Divisions", href: "/admin/dashboard/pages/divisions", icon: FolderKanban },
   { name: "Projects", href: "/admin/dashboard/pages/projects", icon: FolderKanban },
   { name: "Sustainability", href: "/admin/dashboard/pages/sustainability", icon: Leaf },
   { name: "Career", href: "/admin/dashboard/pages/career", icon: Briefcase },
@@ -59,10 +60,18 @@ const managementNavigation = [
 
 const adminNavigation = [{ name: "All Websites", href: "/admin/dashboard/websites", icon: Globe }]
 
+interface Division {
+  id: string
+  slug: string
+  name: string
+}
+
 export function AdminSidebar() {
   const pathname = usePathname()
   const { currentWebsite, setCurrentWebsite } = useWebsite()
   const [websites, setWebsites] = useState<Tenant[]>([])
+  const [divisions, setDivisions] = useState<Division[]>([])
+  const [divisionsOpen, setDivisionsOpen] = useState(false)
 
   useEffect(() => {
     fetch("/api/tenants")
@@ -70,6 +79,21 @@ export function AdminSidebar() {
       .then((data) => setWebsites(data.tenants || []))
       .catch(console.error)
   }, [])
+
+  useEffect(() => {
+    if (currentWebsite?.slug) {
+      fetch(`/api/divisions?tenant=${currentWebsite.slug}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setDivisions(data.divisions || [])
+          // Auto-open if we're on a division page
+          if (pathname.startsWith("/admin/dashboard/pages/divisions/") && pathname !== "/admin/dashboard/pages/divisions") {
+            setDivisionsOpen(true)
+          }
+        })
+        .catch(console.error)
+    }
+  }, [currentWebsite?.slug, pathname])
 
   const NavLink = ({
     item,
@@ -166,6 +190,72 @@ export function AdminSidebar() {
             {pagesNavigation.map((item) => (
               <NavLink key={item.name} item={item} />
             ))}
+
+            {/* Divisions Dropdown */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setDivisionsOpen(!divisionsOpen)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  pathname.startsWith("/admin/dashboard/pages/divisions")
+                    ? "bg-green-50 text-green-700"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                )}
+              >
+                <FolderKanban className="h-5 w-5" />
+                <span className="flex-1 text-left">Divisions</span>
+                {divisionsOpen ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+
+              {divisionsOpen && (
+                <div className="ml-4 space-y-1 border-l-2 border-gray-200 pl-4">
+                  <Link
+                    href="/admin/dashboard/pages/divisions"
+                    className={cn(
+                      "block px-3 py-2 rounded-lg text-sm transition-colors",
+                      pathname === "/admin/dashboard/pages/divisions"
+                        ? "bg-green-50 text-green-700 font-medium"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                    )}
+                  >
+                    Divisions Page
+                  </Link>
+
+                  {divisions.map((division) => (
+                    <Link
+                      key={division.id}
+                      href={`/admin/dashboard/pages/divisions/${division.slug}`}
+                      className={cn(
+                        "block px-3 py-2 rounded-lg text-sm transition-colors truncate",
+                        pathname === `/admin/dashboard/pages/divisions/${division.slug}`
+                          ? "bg-green-50 text-green-700 font-medium"
+                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                      )}
+                      title={division.name}
+                    >
+                      {division.name}
+                    </Link>
+                  ))}
+
+                  <Link
+                    href="/admin/dashboard/pages/divisions/new"
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
+                      pathname === "/admin/dashboard/pages/divisions/new"
+                        ? "bg-green-50 text-green-700 font-medium"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                    )}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create New
+                  </Link>
+                </div>
+              )}
+            </div>
 
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-6">CMS</p>
             {cmsNavigation.map((item) => (
