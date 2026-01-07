@@ -48,20 +48,20 @@ export default function Header() {
         <div className="max-w-341.5 mx-auto px-6">
           <div className="grid-cols-12 items-center h-[100px] w-full grid">
             {/* Brand - Logo on left */}
-            <div className="col-span-2">  
+            <div className="col-span-4 lg:col-span-2">  
             <Link href="/" className="flex items-center gap-3">
               <Image
                 src={branding?.headerLogo || "/images/logo-header.png"}
                 alt={branding?.siteTitle || "VBR Group"}
                 width={50}
                 height={50}
-                className="h-[50px] w-auto"
+                className="h-[30px] md:h-[50px] w-auto"
               />
             </Link>
             </div>
-            <div className="flex justify-end lg:justify-center col-span-9">
+            <div className="flex justify-end lg:justify-center col-span-7 lg:col-span-10 xl:col-span-9">
             {/* Navigation - Right side */}
-            <nav className="hidden lg:flex items-center gap-8 lg:justify-around">
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 lg:justify-around">
               {navigation?.items.map((item) => (
                 <NavItem
                   key={item.id}
