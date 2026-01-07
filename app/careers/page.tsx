@@ -17,9 +17,28 @@ import type { JobOpening } from "@/lib/db/schemas"
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
+interface CareerPageContent {
+  hero: {
+    title: string
+    backgroundImage: string
+  }
+  intro: {
+    badge: string
+    title: string
+    description: string
+  }
+}
+
 export default function CareersPage() {
-  const { data } = useSWR<{ jobs: JobOpening[] }>("/api/jobs?tenant=kisan-plant-technologies&active=true", fetcher)
-  const jobs = data?.jobs || []
+  const { data: jobsData } = useSWR<{ jobs: JobOpening[] }>("/api/jobs?tenant=kisan-plant-technologies&active=true", fetcher)
+  const { data: contentData } = useSWR<{ content: CareerPageContent }>("/api/pages/career/content?tenant=kisan-plant-technologies", fetcher)
+  
+  const jobs = jobsData?.jobs || []
+  const content = contentData?.content
+
+  if (!content) {
+    return null
+  }
 
   return (
     <>
@@ -27,10 +46,10 @@ export default function CareersPage() {
 
       {/* Hero */}
       <section className="relative h-[350px] md:h-[400px] overflow-hidden">
-        <Image src="/images/Careers.png" alt="Careers" fill className="object-cover" />
+        <Image src={content.hero.backgroundImage} alt="Careers" fill className="object-cover" />
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white px-5 z-10">
-          <h1 className="text-4xl md:text-5xl font-light">Careers That Cultivate Impact</h1>
+          <h1 className="text-4xl md:text-5xl font-light">{content.hero.title}</h1>
         </div>
       </section>
 
@@ -41,12 +60,11 @@ export default function CareersPage() {
           <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-base font-bold px-4 py-1 rounded-full mb-8">
               <span className="w-2 h-2 bg-white rounded-full"></span>
-              Careers
+              {content.intro.badge}
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">MAKE YOUR NEXT CAREER MOVE</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">{content.intro.title}</h2>
             <p className="text-muted-foreground max-w-[650px] mx-auto">
-              Join Kisan Plant Technologies Pvt. Ltd. and be part of a purpose-driven team shaping the future of
-              intelligent agriculture, sustainability, and green innovation.
+              {content.intro.description}
             </p>
           </div>
 

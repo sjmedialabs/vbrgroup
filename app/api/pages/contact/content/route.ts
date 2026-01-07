@@ -93,8 +93,17 @@ export async function GET(request: NextRequest) {
       ])
 
       if (pageContent) {
+        // Merge with defaults to ensure all fields exist
+        const dbContent = pageContent.content as any
+        const content = {
+          hero: dbContent.hero || defaultContactContent.hero,
+          phoneBar: dbContent.phoneBar || defaultContactContent.phoneBar,
+          officeAddresses: dbContent.officeAddresses || defaultContactContent.officeAddresses,
+          contactInfo: dbContent.contactInfo || defaultContactContent.contactInfo,
+          socialMedia: dbContent.socialMedia || defaultContactContent.socialMedia,
+        }
+        
         // Merge offices from database if available
-        const content = pageContent.content as typeof defaultContactContent
         if (offices.length > 0 && content.officeAddresses) {
           content.officeAddresses.offices = offices.map((office) => ({
             type: office.type === "head" ? "Head Office" : office.name,

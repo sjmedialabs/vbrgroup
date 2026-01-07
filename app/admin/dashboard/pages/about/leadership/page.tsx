@@ -9,27 +9,28 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useWebsite } from "@/lib/contexts/website-context"
 import { ImageUploadField } from "@/components/admin/image-upload-field"
-import { Loader2, Save } from "lucide-react"
+import { Loader2, Save, Plus, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
-interface CareerPageContent {
+interface LeadershipPageContent {
   hero: {
     title: string
     backgroundImage: string
   }
-  intro: {
+  content: {
     badge: string
     title: string
-    description: string
+    paragraphs: string[]
+    image: string
   }
 }
 
-export default function CareerPageAdmin() {
+export default function LeadershipPageAdmin() {
   const { currentWebsite } = useWebsite()
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [content, setContent] = useState<CareerPageContent | null>(null)
+  const [content, setContent] = useState<LeadershipPageContent | null>(null)
 
   useEffect(() => {
     if (currentWebsite) {
@@ -40,12 +41,11 @@ export default function CareerPageAdmin() {
   const fetchContent = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/pages/career/content?tenant=${currentWebsite?.slug}`)
+      const res = await fetch(`/api/pages/about/leadership/content?tenant=${currentWebsite?.slug}`)
       const data = await res.json()
       setContent(data.content)
     } catch (error) {
       console.error("Error fetching content:", error)
-      toast({ title: "Error", description: "Failed to load content", variant: "destructive" })
     } finally {
       setLoading(false)
     }
@@ -55,21 +55,56 @@ export default function CareerPageAdmin() {
     if (!content || !currentWebsite) return
     setSaving(true)
     try {
-      const res = await fetch(`/api/pages/career/content?tenant=${currentWebsite.slug}`, {
+      const res = await fetch(`/api/pages/about/leadership/content?tenant=${currentWebsite.slug}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),
       })
       if (res.ok) {
-        toast({ title: "Success", description: "Career page saved successfully" })
+        toast({ title: "Success", description: "Leadership page saved" })
       } else {
         throw new Error("Failed to save")
       }
     } catch (error) {
-      toast({ title: "Error", description: "Failed to save career page", variant: "destructive" })
+      toast({ title: "Error", description: "Failed to save", variant: "destructive" })
     } finally {
       setSaving(false)
     }
+  }
+
+  const addParagraph = () => {
+    if (!content) return
+    setContent({
+      ...content,
+      content: {
+        ...content.content,
+        paragraphs: [...content.content.paragraphs, ""],
+      },
+    })
+  }
+
+  const removeParagraph = (index: number) => {
+    if (!content) return
+    setContent({
+      ...content,
+      content: {
+        ...content.content,
+        paragraphs: content.content.paragraphs.filter((_, i) => i !== index),
+      },
+    })
+  }
+
+  const updateParagraph = (index: number, value: string) => {
+    if (!content) return
+    const newParagraphs = [...content.content.paragraphs]
+    newParagraphs[index] = value
+    setContent({
+      ...content,
+      content: {
+        ...content.content,
+        paragraphs: newParagraphs,
+      },
+    })
   }
 
   if (loading) {
@@ -85,7 +120,7 @@ export default function CareerPageAdmin() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Career Page</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Leadership Page</h2>
         <Button onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Changes
@@ -95,7 +130,7 @@ export default function CareerPageAdmin() {
       <Tabs defaultValue="hero" className="space-y-4">
         <TabsList>
           <TabsTrigger value="hero">Hero Section</TabsTrigger>
-          <TabsTrigger value="intro">Intro Section</TabsTrigger>
+          <TabsTrigger value="content">Content Section</TabsTrigger>
         </TabsList>
 
         {/* Hero Section */}
@@ -115,7 +150,7 @@ export default function CareerPageAdmin() {
                       hero: { ...content.hero, title: e.target.value },
                     })
                   }
-                  placeholder="Careers That Cultivate Impact"
+                  placeholder="Our Leadership"
                 />
               </div>
 
@@ -136,65 +171,87 @@ export default function CareerPageAdmin() {
           </Card>
         </TabsContent>
 
-        {/* Intro Section */}
-        <TabsContent value="intro">
+        {/* Content Section */}
+        <TabsContent value="content">
           <Card>
             <CardHeader>
-              <CardTitle>Intro Section</CardTitle>
+              <CardTitle>Content Section</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Badge</Label>
                 <Input
-                  value={content.intro.badge}
+                  value={content.content.badge}
                   onChange={(e) =>
                     setContent({
                       ...content,
-                      intro: { ...content.intro, badge: e.target.value },
+                      content: { ...content.content, badge: e.target.value },
                     })
                   }
-                  placeholder="Careers"
+                  placeholder="Leadership"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label>Title</Label>
                 <Input
-                  value={content.intro.title}
+                  value={content.content.title}
                   onChange={(e) =>
                     setContent({
                       ...content,
-                      intro: { ...content.intro, title: e.target.value },
+                      content: { ...content.content, title: e.target.value },
                     })
                   }
-                  placeholder="MAKE YOUR NEXT CAREER MOVE"
+                  placeholder="Visionary Leaders Driving Innovation"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>Description</Label>
-                <Textarea
-                  value={content.intro.description}
-                  onChange={(e) =>
+                <Label>Image</Label>
+                <ImageUploadField
+                  value={content.content.image}
+                  onChange={(url) =>
                     setContent({
                       ...content,
-                      intro: { ...content.intro, description: e.target.value },
+                      content: { ...content.content, image: url },
                     })
                   }
-                  placeholder="Join Kisan Plant Technologies..."
-                  rows={4}
+                  label="Upload Content Image"
                 />
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label>Paragraphs</Label>
+                  <Button onClick={addParagraph} size="sm" variant="outline">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Paragraph
+                  </Button>
+                </div>
+
+                {content.content.paragraphs.map((paragraph, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>Paragraph {index + 1}</Label>
+                      {content.content.paragraphs.length > 1 && (
+                        <Button onClick={() => removeParagraph(index)} size="sm" variant="ghost">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </div>
+                    <Textarea
+                      value={paragraph}
+                      onChange={(e) => updateParagraph(index, e.target.value)}
+                      placeholder="Enter paragraph content..."
+                      rows={4}
+                    />
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-      
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm text-blue-800">
-          <strong>Note:</strong> Job listings are managed separately in the Jobs section. This page only controls the hero and intro content.
-        </p>
-      </div>
     </div>
   )
 }

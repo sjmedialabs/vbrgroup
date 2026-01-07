@@ -181,12 +181,27 @@ export default function DivisionsPageAdmin() {
     })
   }
 
-  const removeDivision = (id: string) => {
-    if (!content) return
-    setContent({
-      ...content,
-      divisions: content.divisions.filter((div) => div.id !== id),
-    })
+  const removeDivision = async (id: string) => {
+    if (!content || !currentWebsite) return
+    
+    try {
+      const res = await fetch(`/api/divisions/${id}?tenant=${currentWebsite.slug}`, {
+        method: "DELETE",
+      })
+      
+      if (!res.ok) {
+        throw new Error("Failed to delete division")
+      }
+      
+      setContent({
+        ...content,
+        divisions: content.divisions.filter((div) => div.id !== id),
+      })
+      
+      toast({ title: "Success", description: "Division deleted successfully" })
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to delete division", variant: "destructive" })
+    }
   }
 
   const addFeature = (divisionId: string) => {

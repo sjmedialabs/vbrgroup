@@ -100,7 +100,7 @@ export default function DivisionsPage() {
 
           {/* Divisions Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {content?.divisions?.slice(0, 6).map((division) => (
+            {content?.divisions?.map((division) => (
               <Link href={division.link || "#"} key={division.id} className="group">
                 <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 p-4">
                   {/* Division Image */}

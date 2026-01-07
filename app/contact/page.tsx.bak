@@ -163,13 +163,13 @@ const defaultContactContent = {
   },
 }
 export default function ContactPage() {
-  const [content, setContent] = useState<ContactContent | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [content, setContent] = useState<ContactContent | null>(defaultContactContent)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     async function fetchContent() {
       try {
-        const res = await fetch("/api/pages/contact/content?tenant=kisan-plant-technologies")
+        const res = await fetch("/api/pages/contact/content")
         const data = await res.json()
         setContent(data.content)
       } catch (error) {
@@ -179,9 +179,7 @@ export default function ContactPage() {
       }
     }
     fetchContent()
-  }, [])
-
-  if (loading || !content) return null
+  // }, [])
 
   const getSocialIcon = (name: string) => {
     switch (name.toLowerCase()) {

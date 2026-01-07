@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 
     const [pageContent, divisions] = await Promise.all([
       PageContent.findOne({ tenantSlug: tenant, pageType: "divisions" }).lean(),
-      Division.find({ tenantSlug: tenant, isActive: true }).sort({ order: 1 }).lean(),
+      Division.find({ tenantSlug: tenant, $or: [{ isActive: true }, { isActive: null }] }).sort({ order: 1 }).lean(),
     ])
 
     // If no page content exists, create default with divisions from DB
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       features: d.features || [],
     }))
 
-    return NextResponse.json({ content })
+    return NextResponse.json({ content }, { headers: { "Cache-Control": "no-store, max-age=0" } })
   } catch (error) {
     console.error("MongoDB divisions content fetch error:", error)
     return NextResponse.json(

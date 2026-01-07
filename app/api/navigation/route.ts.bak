@@ -29,11 +29,10 @@ export async function GET(request: Request) {
               if (item.label?.toUpperCase() === "DIVISIONS") {
                 return {
                   ...item,
-                  children: divisions.map((div: any, index: number) => ({
+                  items: divisions.map((div: any) => ({
                     id: div._id.toString(),
                     label: div.name,
                     url: `/divisions/${div.slug}`,
-                    order: div.order !== undefined && div.order !== null ? div.order : index,
                   })),
                 }
               }
@@ -60,11 +59,10 @@ export async function GET(request: Request) {
             if (item.label?.toUpperCase() === "DIVISIONS") {
               return {
                 ...item,
-                children: divisions.map((div: any, index: number) => ({
+                items: divisions.map((div: any) => ({
                   id: div._id.toString(),
                   label: div.name,
                   url: `/divisions/${div.slug}`,
-                  order: div.order !== undefined && div.order !== null ? div.order : index,
                 })),
               }
             }

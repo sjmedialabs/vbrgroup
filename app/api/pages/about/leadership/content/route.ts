@@ -1,48 +1,94 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { connectToDatabase, isMongoDBConfigured, PageContent } from "@/lib/db"
 import { dataStore } from "@/lib/mock-data"
+import { shouldUseMockFallback, handleDatabaseUnavailable } from "@/lib/db/config"
+
+const DEFAULT_TENANT = "kisan-plant-technologies"
 
 const defaultLeadershipContent = {
   hero: {
-    title: "Leadership",
-    backgroundImage: "/images/image-209.png",
+    title: "Our Leadership",
+    backgroundImage: "/images/leadership-hero.jpg",
   },
   content: {
     badge: "Leadership",
-    title: "Visionary leadership driving innovation, sustainability, and the future of Indian agriculture.",
+    title: "Visionary Leaders Driving Innovation",
     paragraphs: [
-      "Kisan Plant Technologies Pvt. Ltd. is driven by visionary leadership that combines entrepreneurial foresight with deep domain expertise in agriculture and technology. Under the guidance of its founder-led management, the company is built on a strong commitment to innovation, farmer-centric solutions, and sustainable growth. The leadership team actively steers strategy, execution, and long-term value creation—ensuring every initiative aligns with the mission of transforming Indian agriculture through intelligent, integrated solutions.",
+      "Our leadership team comprises experienced professionals with deep expertise in agriculture, technology, and sustainable business practices. They guide our mission to transform traditional farming through innovation and digital solutions.",
+      "With decades of combined experience, our leaders bring strategic vision, operational excellence, and a commitment to making agriculture more productive, sustainable, and profitable for farmers across India.",
+      "Their dedication to excellence and innovation has positioned VBR Group as a trusted partner for thousands of farmers, helping them adopt modern practices and achieve better outcomes.",
     ],
-    image: "/images/leaderhip-20image.png",
+    image: "/images/leadership-team.jpg",
   },
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const tenant = searchParams.get("tenant") || "default"
+  const tenant = request.nextUrl.searchParams.get("tenant") || DEFAULT_TENANT
 
-  const tenantContent = dataStore.pageContents?.[tenant]?.leadership || defaultLeadershipContent
+  if (shouldUseMockFallback()) {
+    return NextResponse.json({
+      content: dataStore.leadership || defaultLeadershipContent,
+    })
+  }
 
-  return NextResponse.json({ content: tenantContent })
+  if (!isMongoDBConfigured()) {
+    return handleDatabaseUnavailable()
+  }
+
+  try {
+    await connectToDatabase()
+
+    const pageContent = await PageContent.findOne({
+      tenant,
+      pageType: "leadership",
+    }).lean()
+
+    if (pageContent && pageContent.content) {
+      return NextResponse.json({ content: pageContent.content })
+    }
+
+    // Return default content if no database entry exists
+    return NextResponse.json({ content: defaultLeadershipContent })
+  } catch (error) {
+    console.error("Error fetching leadership content:", error)
+    return NextResponse.json({ content: defaultLeadershipContent })
+  }
 }
 
 export async function PUT(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const tenant = searchParams.get("tenant") || "default"
+  const tenant = request.nextUrl.searchParams.get("tenant") || DEFAULT_TENANT
+
+  if (shouldUseMockFallback()) {
+    const { content } = await request.json()
+    dataStore.leadership = content
+    return NextResponse.json({ success: true })
+  }
+
+  if (!isMongoDBConfigured()) {
+    return handleDatabaseUnavailable()
+  }
 
   try {
+    await connectToDatabase()
+
     const { content } = await request.json()
 
-    if (!dataStore.pageContents) {
-      dataStore.pageContents = {}
-    }
-    if (!dataStore.pageContents[tenant]) {
-      dataStore.pageContents[tenant] = {}
-    }
+    await PageContent.findOneAndUpdate(
+      { tenant, pageType: "leadership" },
+      {
+        $set: {
+          tenant,
+          pageType: "leadership",
+          content,
+          updatedAt: new Date(),
+        },
+      },
+      { upsert: true, new: true }
+    )
 
-    dataStore.pageContents[tenant].leadership = content
-
-    return NextResponse.json({ success: true, content })
+    return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: "Failed to save content" }, { status: 500 })
+    console.error("Error updating leadership content:", error)
+    return NextResponse.json({ success: false, error: "Failed to update content" }, { status: 500 })
   }
 }

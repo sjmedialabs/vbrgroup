@@ -40,6 +40,7 @@ const mainNavigation = [{ name: "Dashboard", href: "/admin/dashboard", icon: Lay
 const pagesNavigation = [
   { name: "Home", href: "/admin/dashboard/pages/home", icon: Home },
   { name: "About", href: "/admin/dashboard/pages/about", icon: Users },
+  { name: "Leadership", href: "/admin/dashboard/pages/about/leadership", icon: Users },
   { name: "Services", href: "/admin/dashboard/pages/services", icon: Wrench },
   { name: "Projects", href: "/admin/dashboard/pages/projects", icon: FolderKanban },
   { name: "Sustainability", href: "/admin/dashboard/pages/sustainability", icon: Leaf },

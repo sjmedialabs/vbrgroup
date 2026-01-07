@@ -24,7 +24,6 @@ export default function Header() {
   const { data: navData } = useSWR<{ navigation: NavigationMenu }>(
     "/api/navigation?tenant=kisan-plant-technologies&location=header",
     fetcher,
-    { revalidateOnFocus: true, revalidateOnReconnect: true },
   )
 
   useEffect(() => {
