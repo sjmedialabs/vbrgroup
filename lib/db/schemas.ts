@@ -247,12 +247,13 @@ export interface MediaFile {
   updatedAt: Date
 }
 
-export const IMAGE_SIZE_LIMITS = {
-  logo: { maxSize: 500 * 1024, maxWidth: 400, maxHeight: 200 },
-  hero: { maxSize: 2 * 1024 * 1024, maxWidth: 1920, maxHeight: 1080 },
-  thumbnail: { maxSize: 200 * 1024, maxWidth: 400, maxHeight: 400 },
-  icon: { maxSize: 50 * 1024, maxWidth: 100, maxHeight: 100 },
-  general: { maxSize: 1 * 1024 * 1024, maxWidth: 1200, maxHeight: 1200 },
+export const IMAGE_SIZE_LIMITS = 
+{
+  logo: { maxSize: 307200000, maxWidth: 400, maxHeight: 800 },
+  hero: { maxSize: 307200000, maxWidth: 1920, maxHeight: 1080 },
+  thumbnail: { maxSize: 3072000000, maxWidth: 11920, maxHeight: 800 },
+  icon: { maxSize: 307200000, maxWidth: 1920, maxHeight: 1000 },
+  general: { maxSize: 307200000, maxWidth: 1920, maxHeight: 1200 },
 }
 
 export interface Lead {

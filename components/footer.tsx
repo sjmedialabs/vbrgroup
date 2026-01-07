@@ -33,9 +33,10 @@ export default function Footer() {
             <div className="flex items-center justify-center">
               <Image
                 src={branding?.footerLogo || "/images/logo-footer.png"}
+                className="w-auto h-auto"
                 alt={branding?.siteTitle || "VBR Group"}
-                width={80}
-                height={80}
+                width={120}
+                height={100}
               />
             </div>
           </div>

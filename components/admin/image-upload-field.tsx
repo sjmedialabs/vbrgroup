@@ -32,7 +32,7 @@ export function ImageUploadField({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const limits = IMAGE_SIZE_LIMITS[imageType]
-  const maxSizeKB = limits.maxSize / 1024
+  const maxSizeKB = 307212345
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -40,12 +40,12 @@ export function ImageUploadField({
 
     setError(null)
 
-    if (file.size > limits.maxSize) {
+    if (file.size > maxSizeKB) {
       setError(`File too large. Maximum size is ${maxSizeKB}KB`)
       return
     }
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"]
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml", "image/PNG"]
     if (!allowedTypes.includes(file.type)) {
       setError("Invalid file type. Allowed: JPG, PNG, GIF, WebP, SVG")
       return
