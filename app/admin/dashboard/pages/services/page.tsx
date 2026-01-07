@@ -12,13 +12,19 @@ import { ImageUploadField } from "@/components/admin/image-upload-field"
 import { Loader2, Save, Plus, Trash2, GripVertical } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
+interface ServiceTag {
+  id: string
+  icon: string
+  label: string
+}
+
 interface Service {
   id: string
   number: string
   title: string
   description: string
   image: string
-  tags: string[]
+  tags: ServiceTag[]
 }
 
 interface ServicesPageContent {
@@ -97,18 +103,48 @@ export default function ServicesPageAdmin() {
 
   const removeService = (id: string) => {
     if (!content) return
-    const updatedServices = content.services
-      .filter((s) => s.id !== id)
-      .map((s, idx) => ({ ...s, number: String(idx + 1).padStart(2, "0") }))
+    const updatedServices = content.services.filter((s) => s.id !== id)
+    // Renumber services
+    const renumberedServices = updatedServices.map((s, idx) => ({
+      ...s,
+      number: String(idx + 1).padStart(2, "0"),
+    }))
+    setContent({ ...content, services: renumberedServices })
+  }
+
+  const updateService = (id: string, field: keyof Service, value: any) => {
+    if (!content) return
+    const updatedServices = content.services.map((s) => (s.id === id ? { ...s, [field]: value } : s))
     setContent({ ...content, services: updatedServices })
   }
 
-  const updateService = (id: string, field: keyof Service, value: string | string[]) => {
+  const addTagToService = (serviceId: string) => {
     if (!content) return
-    setContent({
-      ...content,
-      services: content.services.map((s) => (s.id === id ? { ...s, [field]: value } : s)),
-    })
+    const updatedServices = content.services.map((s) =>
+      s.id === serviceId ? { ...s, tags: [...s.tags, { id: generateId(), icon: "", label: "" }] } : s,
+    )
+    setContent({ ...content, services: updatedServices })
+  }
+
+  const removeTagFromService = (serviceId: string, tagId: string) => {
+    if (!content) return
+    const updatedServices = content.services.map((s) =>
+      s.id === serviceId ? { ...s, tags: s.tags.filter((t) => t.id !== tagId) } : s,
+    )
+    setContent({ ...content, services: updatedServices })
+  }
+
+  const updateTag = (serviceId: string, tagId: string, field: keyof ServiceTag, value: string) => {
+    if (!content) return
+    const updatedServices = content.services.map((s) =>
+      s.id === serviceId
+        ? {
+            ...s,
+            tags: s.tags.map((t) => (t.id === tagId ? { ...t, [field]: value } : t)),
+          }
+        : s,
+    )
+    setContent({ ...content, services: updatedServices })
   }
 
   if (!currentWebsite) {
@@ -122,97 +158,104 @@ export default function ServicesPageAdmin() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
       </div>
     )
   }
 
+  if (!content) return null
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Services Page</h2>
-          <p className="text-gray-500 mt-1">Manage services page sections for {currentWebsite.name}</p>
-        </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#2d8a39] hover:bg-[#236b2d]">
+        <h1 className="text-3xl font-bold">Services Page Content</h1>
+        <Button onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Changes
         </Button>
       </div>
 
-      <Tabs defaultValue="hero" className="space-y-6">
+      <Tabs defaultValue="hero" className="w-full">
         <TabsList>
-          <TabsTrigger value="hero">Hero Section</TabsTrigger>
+          <TabsTrigger value="hero">Hero</TabsTrigger>
           <TabsTrigger value="intro">Introduction</TabsTrigger>
-          <TabsTrigger value="services">Services List</TabsTrigger>
+          <TabsTrigger value="services">Services</TabsTrigger>
         </TabsList>
 
-        {/* Hero Section */}
-        <TabsContent value="hero">
+        {/* Hero Tab */}
+        <TabsContent value="hero" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Hero Section</CardTitle>
-              <CardDescription>Banner image and title for services page</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Page Title</Label>
+              <div>
+                <Label>Title</Label>
                 <Input
-                  value={content?.hero?.title || ""}
+                  value={content.hero?.title || ""}
                   onChange={(e) =>
-                    setContent((prev) => (prev ? { ...prev, hero: { ...prev.hero, title: e.target.value } } : prev))
+                    setContent({
+                      ...content,
+                      hero: { ...content.hero, title: e.target.value },
+                    })
                   }
-                  placeholder="Services"
                 />
               </div>
               <ImageUploadField
                 label="Background Image"
-                value={content?.hero?.backgroundImage || ""}
+                value={content.hero?.backgroundImage || ""}
                 onChange={(url) =>
-                  setContent((prev) => (prev ? { ...prev, hero: { ...prev.hero, backgroundImage: url } } : prev))
+                  setContent({
+                    ...content,
+                    hero: { ...content.hero, backgroundImage: url },
+                  })
                 }
-                tenant={currentWebsite.slug}
+                accept="image/*"
               />
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Introduction Section */}
-        <TabsContent value="intro">
+        {/* Intro Tab */}
+        <TabsContent value="intro" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Introduction Section</CardTitle>
-              <CardDescription>Badge, title, and description for services introduction</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Badge Text</Label>
+              <div>
+                <Label>Badge</Label>
                 <Input
-                  value={content?.intro?.badge || ""}
+                  value={content.intro?.badge || ""}
                   onChange={(e) =>
-                    setContent((prev) => (prev ? { ...prev, intro: { ...prev.intro, badge: e.target.value } } : prev))
+                    setContent({
+                      ...content,
+                      intro: { ...content.intro, badge: e.target.value },
+                    })
                   }
-                  placeholder="Our Services"
                 />
               </div>
-              <div className="space-y-2">
+              <div>
                 <Label>Title</Label>
                 <Input
-                  value={content?.intro?.title || ""}
+                  value={content.intro?.title || ""}
                   onChange={(e) =>
-                    setContent((prev) => (prev ? { ...prev, intro: { ...prev.intro, title: e.target.value } } : prev))
+                    setContent({
+                      ...content,
+                      intro: { ...content.intro, title: e.target.value },
+                    })
                   }
-                  placeholder="INTEGRATED AGRITECH & SUSTAINABLE GREEN SOLUTIONS"
                 />
               </div>
-              <div className="space-y-2">
+              <div>
                 <Label>Description</Label>
                 <Textarea
-                  value={content?.intro?.description || ""}
+                  value={content.intro?.description || ""}
                   onChange={(e) =>
-                    setContent((prev) =>
-                      prev ? { ...prev, intro: { ...prev.intro, description: e.target.value } } : prev,
-                    )
+                    setContent({
+                      ...content,
+                      intro: { ...content.intro, description: e.target.value },
+                    })
                   }
                   rows={4}
                 />
@@ -221,79 +264,90 @@ export default function ServicesPageAdmin() {
           </Card>
         </TabsContent>
 
-        {/* Services List */}
-        <TabsContent value="services">
+        {/* Services Tab */}
+        <TabsContent value="services" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Services List</CardTitle>
-                  <CardDescription>Manage individual services</CardDescription>
-                </div>
-                <Button onClick={addService} variant="outline" size="sm">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Service
-                </Button>
-              </div>
+              <CardTitle>Services List</CardTitle>
+              <CardDescription>Add and manage services</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {content?.services?.map((service, index) => (
-                <div key={service.id} className="border rounded-lg p-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+            <CardContent className="space-y-4">
+              {content.services?.map((service, idx) => (
+                <Card key={service.id}>
+                  <CardContent className="pt-6 space-y-4">
+                    <div className="flex items-center gap-2 mb-2">
                       <GripVertical className="h-5 w-5 text-gray-400" />
-                      <span className="font-medium text-lg text-[#2d8a39]">{service.number}</span>
-                      <span className="font-medium">{service.title || "Untitled Service"}</span>
+                      <span className="font-semibold text-gray-500">{service.number}</span>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => removeService(service.id)}>
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Service Title</Label>
+
+                    <div>
+                      <Label>Title</Label>
                       <Input
                         value={service.title}
                         onChange={(e) => updateService(service.id, "title", e.target.value)}
-                        placeholder="Enter service title"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label>Tags (comma separated)</Label>
-                      <Input
-                        value={service.tags.join(", ")}
-                        onChange={(e) =>
-                          updateService(
-                            service.id,
-                            "tags",
-                            e.target.value.split(",").map((t) => t.trim()),
-                          )
-                        }
-                        placeholder="Smart Farming, Green Infrastructure"
+
+                    <div>
+                      <Label>Description</Label>
+                      <Textarea
+                        value={service.description}
+                        onChange={(e) => updateService(service.id, "description", e.target.value)}
+                        rows={3}
                       />
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Description</Label>
-                    <Textarea
-                      value={service.description}
-                      onChange={(e) => updateService(service.id, "description", e.target.value)}
-                      rows={3}
+
+                    <ImageUploadField
+                      label="Service Image"
+                      value={service.image}
+                      onChange={(url) => updateService(service.id, "image", url)}
+                      accept="image/*"
                     />
-                  </div>
-                  <ImageUploadField
-                    label="Service Image"
-                    value={service.image}
-                    onChange={(url) => updateService(service.id, "image", url)}
-                    tenant={currentWebsite.slug}
-                  />
-                </div>
+
+                    <div className="space-y-2">
+                      <Label>Tags</Label>
+                      {service.tags?.map((tag) => (
+                        <Card key={tag.id} className="p-3">
+                          <div className="space-y-2">
+                            <ImageUploadField
+                              label="Tag Icon"
+                              value={tag.icon}
+                              onChange={(url) => updateTag(service.id, tag.id, "icon", url)}
+                              accept="image/*"
+                            />
+                            <div>
+                              <Label>Tag Label</Label>
+                              <Input
+                                value={tag.label}
+                                onChange={(e) => updateTag(service.id, tag.id, "label", e.target.value)}
+                                placeholder="e.g., Smart Farming"
+                              />
+                            </div>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeTagFromService(service.id, tag.id)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> Remove Tag
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                      <Button variant="outline" size="sm" onClick={() => addTagToService(service.id)}>
+                        <Plus className="mr-2 h-4 w-4" /> Add Tag
+                      </Button>
+                    </div>
+
+                    <Button variant="destructive" onClick={() => removeService(service.id)}>
+                      <Trash2 className="mr-2 h-4 w-4" /> Remove Service
+                    </Button>
+                  </CardContent>
+                </Card>
               ))}
-              {(!content?.services || content.services.length === 0) && (
-                <div className="text-center py-8 text-gray-500">
-                  No services yet. Click "Add Service" to create your first service.
-                </div>
-              )}
+
+              <Button onClick={addService} className="w-full">
+                <Plus className="mr-2 h-4 w-4" /> Add Service
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>

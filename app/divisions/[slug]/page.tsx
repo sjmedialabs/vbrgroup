@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useParams } from "next/navigation"
 import Image from "next/image"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 
@@ -41,11 +42,14 @@ export default function DivisionDetailPage() {
   const [content, setContent] = useState<DivisionDetailContent | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState(0)
+  const [showLeftArrow, setShowLeftArrow] = useState(false)
+  const [showRightArrow, setShowRightArrow] = useState(false)
+  const tabsContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch(`/api/pages/divisions/${slug}/content`)
+        const res = await fetch(`/api/pages/divisions/${slug}/content?tenant=kisan-plant-technologies`)
         if (res.ok) {
           const data = await res.json()
           setContent(data.content)
@@ -60,6 +64,39 @@ export default function DivisionDetailPage() {
       fetchContent()
     }
   }, [slug])
+
+  // Check scroll position to show/hide arrows
+  const checkScroll = () => {
+    const container = tabsContainerRef.current
+    if (container) {
+      setShowLeftArrow(container.scrollLeft > 0)
+      setShowRightArrow(container.scrollLeft < container.scrollWidth - container.clientWidth - 10)
+    }
+  }
+
+  useEffect(() => {
+    checkScroll()
+    const container = tabsContainerRef.current
+    if (container) {
+      container.addEventListener("scroll", checkScroll)
+      window.addEventListener("resize", checkScroll)
+      return () => {
+        container.removeEventListener("scroll", checkScroll)
+        window.removeEventListener("resize", checkScroll)
+      }
+    }
+  }, [content])
+
+  const scrollTabs = (direction: "left" | "right") => {
+    const container = tabsContainerRef.current
+    if (container) {
+      const scrollAmount = 200
+      container.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      })
+    }
+  }
 
   if (loading) {
     return (
@@ -105,9 +142,9 @@ export default function DivisionDetailPage() {
 
       {/* About Section */}
       <section className="py-16 md:py-20 bg-[#f8f8f8]">
-        <div className="container mx-auto px-4 max-w-4xl text-center">
+        <div className="container mx-auto px-4 max-w-6xl">
           {/* Badge */}
-          <div className="flex justify-center mb-6">
+          <div className="flex mb-6">
             <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-sm font-medium px-4 py-2 rounded-full">
               <span className="w-2 h-2 bg-white rounded-full"></span>
               {content.about.badge}
@@ -115,14 +152,14 @@ export default function DivisionDetailPage() {
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">{content.about.title}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 whitespace-pre-line leading-tight">
+            {content.about.title}
+          </h2>
 
           {/* Description Paragraphs */}
-          <div className="space-y-4">
+          <div className="space-y-4 text-gray-600 leading-relaxed max-w-4xl">
             {content.about.description.map((paragraph, index) => (
-              <p key={index} className="text-gray-600 leading-relaxed">
-                {paragraph}
-              </p>
+              <p key={index}>{paragraph}</p>
             ))}
           </div>
         </div>
@@ -152,21 +189,46 @@ export default function DivisionDetailPage() {
             <p className="text-gray-600 max-w-md lg:text-right">{content.services.subtitle}</p>
           </div>
 
-          {/* Tabs Navigation */}
-          <div className="border-b border-gray-200 mb-12 overflow-x-auto">
-            <div className="flex gap-6 md:gap-8 min-w-max">
-              {content.services.tabs.map((tab, index) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(index)}
-                  className={`pb-4 text-sm font-medium whitespace-nowrap transition-colors relative ${
-                    activeTab === index ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  {tab.title}
-                  {activeTab === index && <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#2d8a39]" />}
-                </button>
-              ))}
+          {/* Tabs Navigation with Arrows */}
+          <div className="relative mb-12">
+            {/* Left Arrow */}
+            {showLeftArrow && (
+              <button
+                onClick={() => scrollTabs("left")}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-700" />
+              </button>
+            )}
+
+            {/* Right Arrow */}
+            {showRightArrow && (
+              <button
+                onClick={() => scrollTabs("right")}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-5 h-5 text-gray-700" />
+              </button>
+            )}
+
+            {/* Tabs Container */}
+            <div className="border-b border-gray-200">
+              <div ref={tabsContainerRef} className="flex gap-6 md:gap-8 overflow-x-auto scrollbar-hide px-8">
+                {content.services.tabs.map((tab, index) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(index)}
+                    className={`pb-4 text-sm font-medium whitespace-nowrap transition-colors relative flex-shrink-0 ${
+                      activeTab === index ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    {tab.title}
+                    {activeTab === index && <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#2d8a39]" />}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

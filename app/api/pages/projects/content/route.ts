@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { connectToDatabase, isMongoDBConfigured, PageContent } from "@/lib/db"
 import { dataStore } from "@/lib/mock-data"
+
+const DEFAULT_TENANT = "kisan-plant-technologies"
 
 const defaultProjectsContent = {
   hero: {
@@ -82,29 +85,59 @@ const defaultProjectsContent = {
   ],
 }
 
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const tenant = searchParams.get("tenant") || "default"
+  const tenant = searchParams.get("tenant") || DEFAULT_TENANT
 
-  const tenantContent = dataStore.pageContents?.[tenant]?.projects || defaultProjectsContent
+  if (isMongoDBConfigured()) {
+    try {
+      await connectToDatabase()
 
-  return NextResponse.json({ content: tenantContent })
+      const pageContent = await PageContent.findOne({ tenantSlug: tenant, pageType: "projects" }).lean()
+
+      if (pageContent && pageContent.content && Object.keys(pageContent.content).length > 0) {
+        return NextResponse.json({ content: pageContent.content })
+      }
+    } catch (error) {
+      console.error("MongoDB projects content fetch error:", error)
+    }
+  }
+
+  // Check mock data store
+  const mockData = dataStore.pageContents?.[tenant]?.projects
+  if (mockData && Object.keys(mockData).length > 0) {
+    return NextResponse.json({ content: mockData })
+  }
+
+  // Always return default content as fallback
+  return NextResponse.json({ content: defaultProjectsContent })
 }
 
 export async function PUT(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const tenant = searchParams.get("tenant") || "default"
+  const tenant = searchParams.get("tenant") || DEFAULT_TENANT
 
   try {
     const { content } = await request.json()
 
-    if (!dataStore.pageContents) {
-      dataStore.pageContents = {}
-    }
-    if (!dataStore.pageContents[tenant]) {
-      dataStore.pageContents[tenant] = {}
+    if (isMongoDBConfigured()) {
+      try {
+        await connectToDatabase()
+        await PageContent.findOneAndUpdate(
+          { tenantSlug: tenant, pageType: "projects" },
+          { tenantSlug: tenant, pageType: "projects", content, isActive: true },
+          { upsert: true, new: true },
+        )
+        return NextResponse.json({ success: true, content })
+      } catch (error) {
+        console.error("MongoDB projects content update error:", error)
+      }
     }
 
+    // Fallback to mock data
+    if (!dataStore.pageContents) dataStore.pageContents = {}
+    if (!dataStore.pageContents[tenant]) dataStore.pageContents[tenant] = {}
     dataStore.pageContents[tenant].projects = content
 
     return NextResponse.json({ success: true, content })

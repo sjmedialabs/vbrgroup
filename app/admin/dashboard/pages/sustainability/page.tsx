@@ -7,16 +7,18 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useWebsite } from "@/lib/contexts/website-context"
 import { ImageUploadField } from "@/components/admin/image-upload-field"
 import { Loader2, Save, Plus, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
-interface Feature {
+interface Section {
   id: string
-  icon: string
   title: string
-  description: string
+  description: string[]
+  image: string
+  layout: "text-left" | "image-left"
 }
 
 interface SustainabilityPageContent {
@@ -24,22 +26,7 @@ interface SustainabilityPageContent {
     title: string
     backgroundImage: string
   }
-  intro: {
-    badge: string
-    title: string
-    description: string
-    image: string
-    videoUrl: string
-  }
-  features: Feature[]
-  goals: {
-    title: string
-    description: string
-    items: { id: string; title: string; description: string }[]
-  }
-  stats: {
-    items: { id: string; value: string; label: string }[]
-  }
+  sections: Section[]
 }
 
 export default function SustainabilityPageAdmin() {
@@ -91,6 +78,76 @@ export default function SustainabilityPageAdmin() {
 
   const generateId = () => Math.random().toString(36).substr(2, 9)
 
+  const addSection = () => {
+    if (!content) return
+    setContent({
+      ...content,
+      sections: [
+        ...content.sections,
+        {
+          id: generateId(),
+          title: "",
+          description: [""],
+          image: "",
+          layout: "text-left",
+        },
+      ],
+    })
+  }
+
+  const removeSection = (id: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      sections: content.sections.filter((s) => s.id !== id),
+    })
+  }
+
+  const updateSection = (id: string, field: keyof Section, value: any) => {
+    if (!content) return
+    setContent({
+      ...content,
+      sections: content.sections.map((s) => (s.id === id ? { ...s, [field]: value } : s)),
+    })
+  }
+
+  const addParagraphToSection = (sectionId: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      sections: content.sections.map((s) =>
+        s.id === sectionId ? { ...s, description: [...s.description, ""] } : s,
+      ),
+    })
+  }
+
+  const removeParagraphFromSection = (sectionId: string, paraIndex: number) => {
+    if (!content) return
+    setContent({
+      ...content,
+      sections: content.sections.map((s) =>
+        s.id === sectionId
+          ? { ...s, description: s.description.filter((_, i) => i !== paraIndex) }
+          : s,
+      ),
+    })
+  }
+
+  const updateParagraph = (sectionId: string, paraIndex: number, value: string) => {
+    if (!content) return
+    setContent({
+      ...content,
+      sections: content.sections.map((s) =>
+        s.id === sectionId
+          ? {
+              ...s,
+              description: s.description.map((p, i) => (i === paraIndex ? value : p)),
+            }
+          : s,
+      ),
+    })
+  }
+
   if (!currentWebsite) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -102,330 +159,152 @@ export default function SustainabilityPageAdmin() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
       </div>
     )
   }
 
+  if (!content) return null
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Sustainability Page</h2>
-          <p className="text-gray-500 mt-1">Manage sustainability page for {currentWebsite.name}</p>
-        </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#2d8a39] hover:bg-[#236b2d]">
+        <h1 className="text-3xl font-bold">Sustainability Page Content</h1>
+        <Button onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Changes
         </Button>
       </div>
 
-      <Tabs defaultValue="hero" className="space-y-6">
+      <Tabs defaultValue="hero" className="w-full">
         <TabsList>
           <TabsTrigger value="hero">Hero</TabsTrigger>
-          <TabsTrigger value="intro">Introduction</TabsTrigger>
-          <TabsTrigger value="features">Features</TabsTrigger>
-          <TabsTrigger value="goals">Goals</TabsTrigger>
-          <TabsTrigger value="stats">Stats</TabsTrigger>
+          <TabsTrigger value="sections">Sections</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="hero">
+        {/* Hero Tab */}
+        <TabsContent value="hero" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Hero Section</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Page Title</Label>
+              <div>
+                <Label>Title</Label>
                 <Input
-                  value={content?.hero?.title || ""}
+                  value={content.hero?.title || ""}
                   onChange={(e) =>
-                    setContent((prev) => (prev ? { ...prev, hero: { ...prev.hero, title: e.target.value } } : prev))
+                    setContent({
+                      ...content,
+                      hero: { ...content.hero, title: e.target.value },
+                    })
                   }
                 />
               </div>
               <ImageUploadField
                 label="Background Image"
-                value={content?.hero?.backgroundImage || ""}
+                value={content.hero?.backgroundImage || ""}
                 onChange={(url) =>
-                  setContent((prev) => (prev ? { ...prev, hero: { ...prev.hero, backgroundImage: url } } : prev))
+                  setContent({
+                    ...content,
+                    hero: { ...content.hero, backgroundImage: url },
+                  })
                 }
-                tenant={currentWebsite.slug}
+                accept="image/*"
               />
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="intro">
+        {/* Sections Tab */}
+        <TabsContent value="sections" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Introduction</CardTitle>
+              <CardTitle>Content Sections</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Badge</Label>
-                <Input
-                  value={content?.intro?.badge || ""}
-                  onChange={(e) =>
-                    setContent((prev) => (prev ? { ...prev, intro: { ...prev.intro, badge: e.target.value } } : prev))
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Title</Label>
-                <Input
-                  value={content?.intro?.title || ""}
-                  onChange={(e) =>
-                    setContent((prev) => (prev ? { ...prev, intro: { ...prev.intro, title: e.target.value } } : prev))
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Description</Label>
-                <Textarea
-                  value={content?.intro?.description || ""}
-                  onChange={(e) =>
-                    setContent((prev) =>
-                      prev ? { ...prev, intro: { ...prev.intro, description: e.target.value } } : prev,
-                    )
-                  }
-                  rows={4}
-                />
-              </div>
-              <ImageUploadField
-                label="Main Image"
-                value={content?.intro?.image || ""}
-                onChange={(url) =>
-                  setContent((prev) => (prev ? { ...prev, intro: { ...prev.intro, image: url } } : prev))
-                }
-                tenant={currentWebsite.slug}
-              />
-              <div className="space-y-2">
-                <Label>Video URL</Label>
-                <Input
-                  value={content?.intro?.videoUrl || ""}
-                  onChange={(e) =>
-                    setContent((prev) =>
-                      prev ? { ...prev, intro: { ...prev.intro, videoUrl: e.target.value } } : prev,
-                    )
-                  }
-                  placeholder="https://youtube.com/embed/..."
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              {content.sections?.map((section, sectionIdx) => (
+                <Card key={section.id}>
+                  <CardContent className="pt-6 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-semibold">Section {sectionIdx + 1}</h3>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeSection(section.id)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Remove Section
+                      </Button>
+                    </div>
 
-        <TabsContent value="features">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Features</CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (!content) return
-                    setContent({
-                      ...content,
-                      features: [
-                        ...(content.features || []),
-                        { id: generateId(), icon: "", title: "", description: "" },
-                      ],
-                    })
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Feature
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {content?.features?.map((feature, idx) => (
-                <div key={feature.id} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{feature.title || `Feature ${idx + 1}`}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setContent((prev) =>
-                          prev ? { ...prev, features: prev.features.filter((f) => f.id !== feature.id) } : prev,
-                        )
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </div>
-                  <Input
-                    placeholder="Title"
-                    value={feature.title}
-                    onChange={(e) => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              features: prev.features.map((f) =>
-                                f.id === feature.id ? { ...f, title: e.target.value } : f,
-                              ),
-                            }
-                          : prev,
-                      )
-                    }}
-                  />
-                  <Textarea
-                    placeholder="Description"
-                    value={feature.description}
-                    onChange={(e) => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              features: prev.features.map((f) =>
-                                f.id === feature.id ? { ...f, description: e.target.value } : f,
-                              ),
-                            }
-                          : prev,
-                      )
-                    }}
-                    rows={2}
-                  />
-                  <ImageUploadField
-                    label="Icon"
-                    value={feature.icon}
-                    onChange={(url) => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              features: prev.features.map((f) => (f.id === feature.id ? { ...f, icon: url } : f)),
-                            }
-                          : prev,
-                      )
-                    }}
-                    tenant={currentWebsite.slug}
-                  />
-                </div>
+                    <div>
+                      <Label>Title (use \n for line breaks)</Label>
+                      <Input
+                        value={section.title}
+                        onChange={(e) => updateSection(section.id, "title", e.target.value)}
+                        placeholder="e.g., Sustainability &\nGovernment Initiatives"
+                      />
+                    </div>
+
+                    <div>
+                      <Label>Layout</Label>
+                      <Select
+                        value={section.layout}
+                        onValueChange={(value) =>
+                          updateSection(section.id, "layout", value as "text-left" | "image-left")
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="text-left">Text Left, Image Right</SelectItem>
+                          <SelectItem value="image-left">Image Left, Text Right</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <ImageUploadField
+                      label="Section Image"
+                      value={section.image}
+                      onChange={(url) => updateSection(section.id, "image", url)}
+                      accept="image/*"
+                    />
+
+                    <div className="space-y-2">
+                      <Label>Description Paragraphs</Label>
+                      {section.description?.map((para, paraIdx) => (
+                        <div key={paraIdx} className="flex gap-2">
+                          <Textarea
+                            value={para}
+                            onChange={(e) => updateParagraph(section.id, paraIdx, e.target.value)}
+                            rows={3}
+                            placeholder={`Paragraph ${paraIdx + 1}`}
+                          />
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => removeParagraphFromSection(section.id, paraIdx)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addParagraphToSection(section.id)}
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Add Paragraph
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        <TabsContent value="goals">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sustainability Goals</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Section Title</Label>
-                <Input
-                  value={content?.goals?.title || ""}
-                  onChange={(e) =>
-                    setContent((prev) => (prev ? { ...prev, goals: { ...prev.goals, title: e.target.value } } : prev))
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Description</Label>
-                <Textarea
-                  value={content?.goals?.description || ""}
-                  onChange={(e) =>
-                    setContent((prev) =>
-                      prev ? { ...prev, goals: { ...prev.goals, description: e.target.value } } : prev,
-                    )
-                  }
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="stats">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Statistics</CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (!content) return
-                    setContent({
-                      ...content,
-                      stats: {
-                        ...content.stats,
-                        items: [...(content.stats?.items || []), { id: generateId(), value: "", label: "" }],
-                      },
-                    })
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Stat
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {content?.stats?.items?.map((stat, idx) => (
-                <div key={stat.id} className="flex items-center gap-4">
-                  <Input
-                    placeholder="Value (e.g., 20+)"
-                    value={stat.value}
-                    onChange={(e) => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              stats: {
-                                ...prev.stats,
-                                items: prev.stats.items.map((s) =>
-                                  s.id === stat.id ? { ...s, value: e.target.value } : s,
-                                ),
-                              },
-                            }
-                          : prev,
-                      )
-                    }}
-                    className="w-32"
-                  />
-                  <Input
-                    placeholder="Label"
-                    value={stat.label}
-                    onChange={(e) => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              stats: {
-                                ...prev.stats,
-                                items: prev.stats.items.map((s) =>
-                                  s.id === stat.id ? { ...s, label: e.target.value } : s,
-                                ),
-                              },
-                            }
-                          : prev,
-                      )
-                    }}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              stats: { ...prev.stats, items: prev.stats.items.filter((s) => s.id !== stat.id) },
-                            }
-                          : prev,
-                      )
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
-                </div>
-              ))}
+              <Button onClick={addSection} className="w-full">
+                <Plus className="mr-2 h-4 w-4" /> Add Section
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>

@@ -2,103 +2,61 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useWebsite } from "@/lib/contexts/website-context"
 import { ImageUploadField } from "@/components/admin/image-upload-field"
-import { Loader2, Save, Plus, Trash2, GripVertical } from "lucide-react"
+import { Loader2, Save, Plus, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
-interface TeamMember {
-  id: string
-  name: string
-  role: string
-  image: string
-  bio: string
-}
-interface Feature {
-  id: string
-  icon: string
-  title: string
-  description: string
-}
 interface AboutPageContent {
   hero: {
     title: string
     backgroundImage: string
   }
-  intro: {
+  story: {
     badge: string
     title: string
-    description: string
-    image: string
-    features: Feature[]
+    paragraphs: string[]
+    features: {
+      id: string
+      icon: string
+      value?: string
+      label: string
+    }[]
   }
-  mission: {
+  cards: {
+    id: string
     title: string
     description: string
     link: string
-  }
-  impact: {
-    title: string
-    description: string
-    link: string
-  }
-  whatWeDo: {
-    title: string
-    description: string
-    link: string
-  }
+    linkText: string
+  }[]
   whyChooseUs: {
-    title: string
     badge: string
+    title: string
     description: string
-    features: Feature[]
+    features: {
+      id: string
+      icon: string
+      title: string
+      description: string
+    }[]
   }
   growth: {
     badge: string
     title: string
     description: string
-    stats: { label: string; value: string }[]
+    backgroundImage: string
+    stats: {
+      id: string
+      value: string
+      label: string
+    }[]
   }
-  // team: {
-  //   title: string
-  //   subtitle: string
-  //   members: TeamMember[]
-  // }
-}
-const defaultContent: AboutPageContent = {
-  hero: {
-    title: "",
-    backgroundImage: "",
-  },
-  intro: {
-    badge: "",
-    title: "",
-    description: "",
-    image: "",
-    features: [],
-  },
-
-    whatWeDo: { title: "", description: "", link: "" },
-    impact: { title: "", description: "", link: "" },
-    mission: { title: "", description: "", link: "" },
-
-  whyChooseUs: {
-    badge: "",
-    title: "",
-    description: "",
-    features: [],
-  },
-  growth: {
-    badge: "",
-    title: "",
-    description: "",
-    stats: [],
-  },
 }
 
 export default function AboutPageAdmin() {
@@ -106,7 +64,7 @@ export default function AboutPageAdmin() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [content, setContent] = useState<AboutPageContent>(defaultContent)
+  const [content, setContent] = useState<AboutPageContent | null>(null)
 
   useEffect(() => {
     if (currentWebsite) {
@@ -119,7 +77,7 @@ export default function AboutPageAdmin() {
     try {
       const res = await fetch(`/api/pages/about/content?tenant=${currentWebsite?.slug}`)
       const data = await res.json()
-      setContent(data.content || defaultContent)
+      setContent(data.content)
     } catch (error) {
       console.error("Error fetching content:", error)
     } finally {
@@ -149,41 +107,6 @@ export default function AboutPageAdmin() {
   }
 
   const generateId = () => Math.random().toString(36).substr(2, 9)
-    const addAboutFeature = () => {
-    if (!content) return
-    setContent({
-      ...content,
-      intro: {
-        ...content.intro,
-        features: [
-          ...(content.intro.features || []),
-          { id: generateId(), icon: "", title: "", description: "" },
-        ],
-      },
-    })
-  }
-
-  const removeAboutFeature = (id: string) => {
-    if (!content) return
-    setContent({
-      ...content,
-      intro: {
-        ...content.intro,
-        features: content.intro.features.filter((f) => f.id !== id),
-      },
-    })
-  }
-
-  const updateAboutFeature = (id: string, field: keyof Feature, value: string) => {
-    if (!content) return
-    setContent({
-      ...content,
-      intro: {
-        ...content.intro,
-        features: content.intro.features.map((f) => (f.id === id ? { ...f, [field]: value } : f)),
-      },
-    })
-  }
 
   if (!currentWebsite) {
     return (
@@ -196,478 +119,579 @@ export default function AboutPageAdmin() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
       </div>
     )
   }
 
+  if (!content) return null
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">About Page</h2>
-          <p className="text-gray-500 mt-1">Manage about page sections for {currentWebsite.name}</p>
-        </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#2d8a39] hover:bg-[#236b2d]">
+        <h1 className="text-3xl font-bold">About Page Content</h1>
+        <Button onClick={handleSave} disabled={saving}>
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Changes
         </Button>
       </div>
-    <Tabs>
-      <TabsList>
-        <TabsTrigger value="hero">Hero</TabsTrigger>
-        <TabsTrigger value="intro">Introduction</TabsTrigger>
-        <TabsTrigger value="mission">Mission & Vision</TabsTrigger>
-        <TabsTrigger value="whyChoose">Why Choose Us</TabsTrigger>
-        <TabsTrigger value="growth">Our Growth</TabsTrigger>
-      </TabsList>
 
+      <Tabs defaultValue="hero" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="hero">Hero</TabsTrigger>
+          <TabsTrigger value="story">Story</TabsTrigger>
+          <TabsTrigger value="cards">Cards</TabsTrigger>
+          <TabsTrigger value="whyChooseUs">Why Choose Us</TabsTrigger>
+          <TabsTrigger value="growth">Growth</TabsTrigger>
+        </TabsList>
 
-      <TabsContent value="hero">
-        <Card>
-          <CardHeader>
-            <CardTitle>Hero Section</CardTitle>
-            <CardDescription>Banner image and title</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Page Title</Label>
-              <Input
-              type="text"
-                value={content?.hero?.title || ""}
-                onChange={(e) =>
-                  setContent((prev) => (prev ? { ...prev, hero: { ...prev.hero, title: e.target.value } } : prev))
-                }
-                placeholder="About Us"
-              />
-            </div>
-            <ImageUploadField
-              label="Background Image"
-              value={content?.hero?.backgroundImage || ""}
-              onChange={(url) =>
-                setContent((prev) => (prev ? { ...prev, hero: { ...prev.hero, backgroundImage: url } } : prev))
-              }
-              tenant={currentWebsite.slug}
-            />
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="intro">
-        <Card>
-          <CardHeader>
-            <div className="flex flex-row justify-between">
+        {/* Hero Tab */}
+        <TabsContent value="hero" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Hero Section</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div>
-            <CardTitle>Introduction Section</CardTitle>
-            <CardDescription>Company introduction and overview</CardDescription></div>
-                            <Button onClick={addAboutFeature} variant="outline" size="sm">
-                              <Plus className="mr-2 h-4 w-4" />
-                              Add Feature
-                            </Button>
-                            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Badge Text</Label>
-              <Input
-                value={content?.intro?.badge || ""}
-                onChange={(e) =>
-                  setContent((prev) => (prev ? { ...prev, intro: { ...prev.intro, badge: e.target.value } } : prev))
+                <Label>Title</Label>
+                <Input
+                  value={content.hero?.title || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      hero: { ...content.hero, title: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <ImageUploadField
+                label="Background Image"
+                value={content.hero?.backgroundImage || ""}
+                onChange={(url) =>
+                  setContent({
+                    ...content,
+                    hero: { ...content.hero, backgroundImage: url },
+                  })
                 }
+                accept="image/*"
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={content?.intro?.title || ""}
-                onChange={(e) =>
-                  setContent((prev) => (prev ? { ...prev, intro: { ...prev.intro, title: e.target.value } } : prev))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={content?.intro?.description || ""}
-                onChange={(e) =>
-                  setContent((prev) =>
-                    prev ? { ...prev, intro: { ...prev.intro, description: e.target.value } } : prev,
-                  )
-                }
-                rows={4}
-              />
-            </div>
-                          <div className="space-y-4">
-                <Label className="text-lg font-semibold">Features</Label>
-                {content?.intro?.features?.map((feature, index) => (
-                  <div key={feature.id} className="border rounded-lg p-4 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <GripVertical className="h-5 w-5 text-gray-400" />
-                        <span className="font-medium">Feature {index + 1}</span>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Story Tab */}
+        <TabsContent value="story" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Story Section</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Badge</Label>
+                <Input
+                  value={content.story?.badge || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      story: { ...content.story, badge: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Title</Label>
+                <Input
+                  value={content.story?.title || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      story: { ...content.story, title: e.target.value },
+                    })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Paragraphs</Label>
+                {content.story?.paragraphs?.map((para, idx) => (
+                  <div key={idx} className="flex gap-2">
+                    <Textarea
+                      value={para}
+                      onChange={(e) => {
+                        const newParagraphs = [...content.story.paragraphs]
+                        newParagraphs[idx] = e.target.value
+                        setContent({
+                          ...content,
+                          story: { ...content.story, paragraphs: newParagraphs },
+                        })
+                      }}
+                      rows={3}
+                    />
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => {
+                        const newParagraphs = content.story.paragraphs.filter((_, i) => i !== idx)
+                        setContent({
+                          ...content,
+                          story: { ...content.story, paragraphs: newParagraphs },
+                        })
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setContent({
+                      ...content,
+                      story: {
+                        ...content.story,
+                        paragraphs: [...(content.story?.paragraphs || []), ""],
+                      },
+                    })
+                  }
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add Paragraph
+                </Button>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Features</Label>
+                {content.story?.features?.map((feature, idx) => (
+                  <Card key={feature.id}>
+                    <CardContent className="pt-4 space-y-2">
+                      <ImageUploadField
+                        label="Icon"
+                        value={feature.icon}
+                        onChange={(url) => {
+                          const newFeatures = [...content.story.features]
+                          newFeatures[idx].icon = url
+                          setContent({
+                            ...content,
+                            story: { ...content.story, features: newFeatures },
+                          })
+                        }}
+                        accept="image/*"
+                      />
+                      <div>
+                        <Label>Value (optional)</Label>
+                        <Input
+                          value={feature.value || ""}
+                          onChange={(e) => {
+                            const newFeatures = [...content.story.features]
+                            newFeatures[idx].value = e.target.value
+                            setContent({
+                              ...content,
+                              story: { ...content.story, features: newFeatures },
+                            })
+                          }}
+                          placeholder="e.g., 20"
+                        />
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => removeAboutFeature(feature.id)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                      <div>
+                        <Label>Label</Label>
+                        <Input
+                          value={feature.label}
+                          onChange={(e) => {
+                            const newFeatures = [...content.story.features]
+                            newFeatures[idx].label = e.target.value
+                            setContent({
+                              ...content,
+                              story: { ...content.story, features: newFeatures },
+                            })
+                          }}
+                        />
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          const newFeatures = content.story.features.filter((_, i) => i !== idx)
+                          setContent({
+                            ...content,
+                            story: { ...content.story, features: newFeatures },
+                          })
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Remove
                       </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setContent({
+                      ...content,
+                      story: {
+                        ...content.story,
+                        features: [
+                          ...(content.story?.features || []),
+                          { id: generateId(), icon: "", label: "" },
+                        ],
+                      },
+                    })
+                  }
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add Feature
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Cards Tab */}
+        <TabsContent value="cards" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Info Cards</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {content.cards?.map((card, idx) => (
+                <Card key={card.id}>
+                  <CardContent className="pt-4 space-y-2">
+                    <div>
+                      <Label>Title</Label>
+                      <Input
+                        value={card.title}
+                        onChange={(e) => {
+                          const newCards = [...content.cards]
+                          newCards[idx].title = e.target.value
+                          setContent({ ...content, cards: newCards })
+                        }}
+                      />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
+                    <div>
+                      <Label>Description</Label>
+                      <Textarea
+                        value={card.description}
+                        onChange={(e) => {
+                          const newCards = [...content.cards]
+                          newCards[idx].description = e.target.value
+                          setContent({ ...content, cards: newCards })
+                        }}
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <Label>Link</Label>
+                      <Input
+                        value={card.link}
+                        onChange={(e) => {
+                          const newCards = [...content.cards]
+                          newCards[idx].link = e.target.value
+                          setContent({ ...content, cards: newCards })
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label>Link Text</Label>
+                      <Input
+                        value={card.linkText}
+                        onChange={(e) => {
+                          const newCards = [...content.cards]
+                          newCards[idx].linkText = e.target.value
+                          setContent({ ...content, cards: newCards })
+                        }}
+                      />
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        const newCards = content.cards.filter((_, i) => i !== idx)
+                        setContent({ ...content, cards: newCards })
+                      }}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" /> Remove
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setContent({
+                    ...content,
+                    cards: [
+                      ...(content.cards || []),
+                      {
+                        id: generateId(),
+                        title: "",
+                        description: "",
+                        link: "",
+                        linkText: "",
+                      },
+                    ],
+                  })
+                }
+              >
+                <Plus className="mr-2 h-4 w-4" /> Add Card
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Why Choose Us Tab */}
+        <TabsContent value="whyChooseUs" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Why Choose Us Section</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Badge</Label>
+                <Input
+                  value={content.whyChooseUs?.badge || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      whyChooseUs: { ...content.whyChooseUs, badge: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Title</Label>
+                <Input
+                  value={content.whyChooseUs?.title || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      whyChooseUs: { ...content.whyChooseUs, title: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={content.whyChooseUs?.description || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      whyChooseUs: { ...content.whyChooseUs, description: e.target.value },
+                    })
+                  }
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Features</Label>
+                {content.whyChooseUs?.features?.map((feature, idx) => (
+                  <Card key={feature.id}>
+                    <CardContent className="pt-4 space-y-2">
+                      <ImageUploadField
+                        label="Icon"
+                        value={feature.icon}
+                        onChange={(url) => {
+                          const newFeatures = [...content.whyChooseUs.features]
+                          newFeatures[idx].icon = url
+                          setContent({
+                            ...content,
+                            whyChooseUs: { ...content.whyChooseUs, features: newFeatures },
+                          })
+                        }}
+                        accept="image/*"
+                      />
+                      <div>
                         <Label>Title</Label>
                         <Input
                           value={feature.title}
-                          onChange={(e) => updateAboutFeature(feature.id, "title", e.target.value)}
-                          placeholder="Feature Title"
+                          onChange={(e) => {
+                            const newFeatures = [...content.whyChooseUs.features]
+                            newFeatures[idx].title = e.target.value
+                            setContent({
+                              ...content,
+                              whyChooseUs: { ...content.whyChooseUs, features: newFeatures },
+                            })
+                          }}
                         />
                       </div>
-                      <div className="space-y-2">
-                        <ImageUploadField
-                          label="Icon Image"
-                          value={feature.icon}
-                          onChange={(url) => updateAboutFeature(feature.id, "icon", url)}
-                          tenant={currentWebsite.slug}
+                      <div>
+                        <Label>Description</Label>
+                        <Textarea
+                          value={feature.description}
+                          onChange={(e) => {
+                            const newFeatures = [...content.whyChooseUs.features]
+                            newFeatures[idx].description = e.target.value
+                            setContent({
+                              ...content,
+                              whyChooseUs: { ...content.whyChooseUs, features: newFeatures },
+                            })
+                          }}
+                          rows={2}
                         />
                       </div>
-                    </div>
-                  </div>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          const newFeatures = content.whyChooseUs.features.filter((_, i) => i !== idx)
+                          setContent({
+                            ...content,
+                            whyChooseUs: { ...content.whyChooseUs, features: newFeatures },
+                          })
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Remove
+                      </Button>
+                    </CardContent>
+                  </Card>
                 ))}
-                {(!content?.intro?.features || content.intro.features.length === 0) && (
-                  <div className="text-center py-8 text-gray-500 border-2 border-dashed rounded-lg">
-                    No features added yet. Click "Add Feature" to create one.
-                  </div>
-                )}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setContent({
+                      ...content,
+                      whyChooseUs: {
+                        ...content.whyChooseUs,
+                        features: [
+                          ...(content.whyChooseUs?.features || []),
+                          { id: generateId(), icon: "", title: "", description: "" },
+                        ],
+                      },
+                    })
+                  }
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add Feature
+                </Button>
               </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      <TabsContent value="mission">
-        <Card>
-          <CardHeader>
-            <CardTitle>Mission Section</CardTitle>
-            <CardDescription>Company mission statement</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={content?.mission?.title || ""}
-                onChange={(e) =>
-                  setContent((prev) =>
-                    prev ? { ...prev, mission: { ...prev.mission, title: e.target.value } } : prev,
-                  )
-                }
-                placeholder="Our Mission"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={content?.mission?.description || ""}
-                onChange={(e) =>
-                  setContent((prev) =>
-                    prev ? { ...prev, mission: { ...prev.mission, description: e.target.value } } : prev,
-                  )
-                }
-                rows={4}
-              />
-            </div>
-            <ImageUploadField
-              label="Mission Image"
-              value={content?.mission?.image || ""}
-              onChange={(url) =>
-                setContent((prev) => (prev ? { ...prev, mission: { ...prev.mission, image: url } } : prev))
-              }
-              tenant={currentWebsite.slug}
-            />
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="vision">
-        <Card>
-          <CardHeader>
-            <CardTitle>Vision Section</CardTitle>
-            <CardDescription>Company vision statement</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={content?.vision?.title || ""}
-                onChange={(e) =>
-                  setContent((prev) => (prev ? { ...prev, vision: { ...prev.vision, title: e.target.value } } : prev))
-                }
-                placeholder="Our Vision"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={content?.vision?.description || ""}
-                onChange={(e) =>
-                  setContent((prev) =>
-                    prev ? { ...prev, vision: { ...prev.vision, description: e.target.value } } : prev,
-                  )
-                }
-                rows={4}
-              />
-            </div>
-            <ImageUploadField
-              label="Vision Image"
-              value={content?.vision?.image || ""}
-              onChange={(url) =>
-                setContent((prev) => (prev ? { ...prev, vision: { ...prev.vision, image: url } } : prev))
-              }
-              tenant={currentWebsite.slug}
-            />
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="values">
-        <Card>
-          <CardHeader>
-            <CardTitle>Core Values</CardTitle>
-            <CardDescription>Company values and principles</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Section Title</Label>
-              <Input
-                value={content?.values?.title || ""}
-                onChange={(e) =>
-                  setContent((prev) => (prev ? { ...prev, values: { ...prev.values, title: e.target.value } } : prev))
-                }
-                placeholder="Our Core Values"
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label>Values</Label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (!content) return
-                  setContent({
-                    ...content,
-                    values: {
-                      ...content.values,
-                      items: [
-                        ...(content.values?.items || []),
-                        { id: generateId(), icon: "", title: "", description: "" },
-                      ],
-                    },
-                  })
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Value
-              </Button>
-            </div>
-            {content?.values?.items?.map((item, idx) => (
-              <div key={item.id} className="border rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Value {idx + 1}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                            ...prev,
-                            values: { ...prev.values, items: prev.values.items.filter((v) => v.id !== item.id) },
-                          }
-                          : prev,
-                      )
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
-                </div>
+        {/* Growth Tab */}
+        <TabsContent value="growth" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Growth in Numbers Section</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Badge</Label>
                 <Input
-                  placeholder="Title"
-                  value={item.title}
-                  onChange={(e) => {
-                    setContent((prev) =>
-                      prev
-                        ? {
-                          ...prev,
-                          values: {
-                            ...prev.values,
-                            items: prev.values.items.map((v) =>
-                              v.id === item.id ? { ...v, title: e.target.value } : v,
-                            ),
-                          },
-                        }
-                        : prev,
-                    )
-                  }}
+                  value={content.growth?.badge || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      growth: { ...content.growth, badge: e.target.value },
+                    })
+                  }
                 />
+              </div>
+              <div>
+                <Label>Title</Label>
+                <Input
+                  value={content.growth?.title || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      growth: { ...content.growth, title: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label>Description</Label>
                 <Textarea
-                  placeholder="Description"
-                  value={item.description}
-                  onChange={(e) => {
-                    setContent((prev) =>
-                      prev
-                        ? {
-                          ...prev,
-                          values: {
-                            ...prev.values,
-                            items: prev.values.items.map((v) =>
-                              v.id === item.id ? { ...v, description: e.target.value } : v,
-                            ),
-                          },
-                        }
-                        : prev,
-                    )
-                  }}
+                  value={content.growth?.description || ""}
+                  onChange={(e) =>
+                    setContent({
+                      ...content,
+                      growth: { ...content.growth, description: e.target.value },
+                    })
+                  }
                   rows={2}
                 />
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      <TabsContent value="team">
-        <Card>
-          <CardHeader>
-            <CardTitle>Team Section</CardTitle>
-            <CardDescription>Leadership team members</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Section Title</Label>
-                <Input
-                  value={content?.team?.title || ""}
-                  onChange={(e) =>
-                    setContent((prev) => (prev ? { ...prev, team: { ...prev.team, title: e.target.value } } : prev))
-                  }
-                  placeholder="Our Leadership Team"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Subtitle</Label>
-                <Input
-                  value={content?.team?.subtitle || ""}
-                  onChange={(e) =>
-                    setContent((prev) =>
-                      prev ? { ...prev, team: { ...prev.team, subtitle: e.target.value } } : prev,
-                    )
-                  }
-                />
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <Label>Team Members</Label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (!content) return
+              <ImageUploadField
+                label="Background Image"
+                value={content.growth?.backgroundImage || ""}
+                onChange={(url) =>
                   setContent({
                     ...content,
-                    team: {
-                      ...content.team,
-                      members: [
-                        ...(content.team?.members || []),
-                        { id: generateId(), name: "", role: "", image: "", bio: "" },
-                      ],
-                    },
+                    growth: { ...content.growth, backgroundImage: url },
                   })
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Member
-              </Button>
-            </div>
-            {content?.team?.members?.map((member, idx) => (
-              <div key={member.id} className="border rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{member.name || `Member ${idx + 1}`}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                            ...prev,
-                            team: { ...prev.team, members: prev.team.members.filter((m) => m.id !== member.id) },
-                          }
-                          : prev,
-                      )
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    placeholder="Name"
-                    value={member.name}
-                    onChange={(e) => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                            ...prev,
-                            team: {
-                              ...prev.team,
-                              members: prev.team.members.map((m) =>
-                                m.id === member.id ? { ...m, name: e.target.value } : m,
-                              ),
-                            },
-                          }
-                          : prev,
-                      )
-                    }}
-                  />
-                  <Input
-                    placeholder="Role"
-                    value={member.role}
-                    onChange={(e) => {
-                      setContent((prev) =>
-                        prev
-                          ? {
-                            ...prev,
-                            team: {
-                              ...prev.team,
-                              members: prev.team.members.map((m) =>
-                                m.id === member.id ? { ...m, role: e.target.value } : m,
-                              ),
-                            },
-                          }
-                          : prev,
-                      )
-                    }}
-                  />
-                </div>
-                <ImageUploadField
-                  label="Photo"
-                  value={member.image}
-                  onChange={(url) => {
-                    setContent((prev) =>
-                      prev
-                        ? {
-                          ...prev,
-                          team: {
-                            ...prev.team,
-                            members: prev.team.members.map((m) => (m.id === member.id ? { ...m, image: url } : m)),
-                          },
-                        }
-                        : prev,
-                    )
-                  }}
-                  tenant={currentWebsite.slug}
-                />
+                }
+                accept="image/*"
+              />
+
+              <div className="space-y-2">
+                <Label>Stats</Label>
+                {content.growth?.stats?.map((stat, idx) => (
+                  <Card key={stat.id}>
+                    <CardContent className="pt-4 space-y-2 flex gap-2 items-end">
+                      <div className="flex-1">
+                        <Label>Value</Label>
+                        <Input
+                          value={stat.value}
+                          onChange={(e) => {
+                            const newStats = [...content.growth.stats]
+                            newStats[idx].value = e.target.value
+                            setContent({
+                              ...content,
+                              growth: { ...content.growth, stats: newStats },
+                            })
+                          }}
+                          placeholder="e.g., 98%"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <Label>Label</Label>
+                        <Input
+                          value={stat.label}
+                          onChange={(e) => {
+                            const newStats = [...content.growth.stats]
+                            newStats[idx].label = e.target.value
+                            setContent({
+                              ...content,
+                              growth: { ...content.growth, stats: newStats },
+                            })
+                          }}
+                          placeholder="e.g., Client Satisfaction"
+                        />
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => {
+                          const newStats = content.growth.stats.filter((_, i) => i !== idx)
+                          setContent({
+                            ...content,
+                            growth: { ...content.growth, stats: newStats },
+                          })
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setContent({
+                      ...content,
+                      growth: {
+                        ...content.growth,
+                        stats: [...(content.growth?.stats || []), { id: generateId(), value: "", label: "" }],
+                      },
+                    })
+                  }
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add Stat
+                </Button>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
-    </div >
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   )
 }
