@@ -50,21 +50,12 @@ export async function GET(request: NextRequest) {
 
   try {
     await connectToDatabase()
-    const divisions = await Division.find({ tenantSlug: tenant, isActive: true })
+    const divisions = await Division.find({ tenantSlug: tenant })
       .sort({ order: 1 })
       .select("_id slug name tagline subtitle order")
       .lean()
 
-    return NextResponse.json({
-      divisions: divisions.map((d) => ({
-        id: d._id.toString(),
-        slug: d.slug,
-        name: d.name,
-        tagline: d.tagline,
-        subtitle: d.subtitle,
-        order: d.order,
-      })),
-    })
+    return NextResponse.json({divisions: divisions})
   } catch (error) {
     console.error("Error fetching divisions:", error)
     return NextResponse.json({ error: "Failed to fetch divisions" }, { status: 500 })

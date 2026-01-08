@@ -67,39 +67,19 @@ const defaultServicesContent = {
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const tenant = searchParams.get("tenant") || DEFAULT_TENANT
-
   if (isMongoDBConfigured()) {
     try {
       await connectToDatabase()
 
-      const [pageContent, services] = await Promise.all([
-        PageContent.findOne({ tenantSlug: tenant, pageType: "services" }).lean(),
-        Service.find({ tenantSlug: tenant, isActive: true }).sort({ order: 1 }).lean(),
-      ])
+      const pageContent = await PageContent.findOne({ tenantSlug: tenant, pageType: "services" }).lean()
 
-      if (pageContent) {
-        const content = pageContent.content as typeof defaultServicesContent
-        if (services.length > 0) {
-          content.services = services.map((s) => ({
-            id: s._id.toString(),
-            number: s.number,
-            title: s.title,
-            description: s.description,
-            image: s.image,
-            tags: s.tags,
-          }))
-        }
-        console.log("page content initial",content)
-        return NextResponse.json({ content })
+      if (pageContent && pageContent.content && Object.keys(pageContent.content).length > 0) {
+        return NextResponse.json({ content: pageContent.content })
       }
     } catch (error) {
-      console.error("MongoDB services content fetch error:", error)
+      console.error("MongoDB projects content fetch error:", error)
     }
   }
-
-  const tenantContent =  defaultServicesContent
-  console.log(tenantContent)
-  return NextResponse.json({ content: tenantContent })
 }
 
 export async function PUT(request: NextRequest) {

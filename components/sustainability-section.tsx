@@ -104,7 +104,7 @@ export default function SustainabilitySection() {
 
             <div className="absolute bottom-12.5 md:bottom-0 lg:bottom-12.5 right-5 md:right-20 lg:right-5 bg-white p-5 rounded-2xl shadow-lg text-center w-50">
               <Image
-                src={stats.badge?.icon || "/images/smart-tech.png"}
+                src={stats.icon || "/images/smart-tech.png"}
                 alt="Badge"
                 width={50}
                 height={50}

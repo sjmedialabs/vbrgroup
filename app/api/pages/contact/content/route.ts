@@ -79,54 +79,21 @@ const defaultContactContent = {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const tenant = searchParams.get("tenant") || DEFAULT_TENANT
-
-  if (isMongoDBConfigured()) {
-    try {
-      await connectToDatabase()
-
-      // Fetch page content and offices in parallel
-      const [pageContent, offices] = await Promise.all([
-        PageContent.findOne({ tenantSlug: tenant, pageType: "contact" }).lean(),
-        Office.find({ tenantSlug: tenant, isActive: true }).sort({ order: 1 }).lean(),
-      ])
-
-      if (pageContent) {
-        // Merge with defaults to ensure all fields exist
-        const dbContent = pageContent.content as any
-        const content = {
-          hero: dbContent.hero || defaultContactContent.hero,
-          phoneBar: dbContent.phoneBar || defaultContactContent.phoneBar,
-          officeAddresses: dbContent.officeAddresses || defaultContactContent.officeAddresses,
-          contactInfo: dbContent.contactInfo || defaultContactContent.contactInfo,
-          socialMedia: dbContent.socialMedia || defaultContactContent.socialMedia,
-        }
-        
-        // Merge offices from database if available
-        if (offices.length > 0 && content.officeAddresses) {
-          content.officeAddresses.offices = offices.map((office) => ({
-            type: office.type === "head" ? "Head Office" : office.name,
-            name: office.type === "head" ? office.address : office.city,
-            address: office.fullAddress?.split(",")[0] || office.address,
-            city: office.fullAddress?.split(",").slice(1).join(",").trim() || office.city,
-            isHeadOffice: office.type === "head",
-          }))
-        }
-        return NextResponse.json({ content })
-      }
-    } catch (error) {
-      console.error("MongoDB contact content fetch error:", error)
-      handleDatabaseUnavailable(error as Error)
-    }
-  }
-
-  // Fallback to mock data (only in development)
-  if (shouldUseMockFallback()) {
-    const tenantContent = dataStore.pageContents?.[tenant]?.contact || defaultContactContent
-    return NextResponse.json({ content: tenantContent })
-  }
-
+   const { searchParams } = new URL(request.url)
+   const tenant = searchParams.get("tenant") || DEFAULT_TENANT
+   if (isMongoDBConfigured()) {
+     try {
+       await connectToDatabase()
+ 
+       const pageContent = await PageContent.findOne({ tenantSlug: tenant, pageType: "contact" }).lean()
+ 
+       if (pageContent && pageContent.content && Object.keys(pageContent.content).length > 0) {
+         return NextResponse.json({ content: pageContent.content })
+       }
+     } catch (error) {
+       console.error("MongoDB projects content fetch error:", error)
+     }
+   }
   // If nothing is available, return an error with proper JSON
   return NextResponse.json(
     { error: "Content not found", content: null },

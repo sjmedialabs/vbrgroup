@@ -23,72 +23,60 @@ const defaultLeadershipContent = {
 }
 
 export async function GET(request: NextRequest) {
-  const tenant = request.nextUrl.searchParams.get("tenant") || DEFAULT_TENANT
+    const { searchParams } = new URL(request.url)
+  const tenant = searchParams.get("tenant") || DEFAULT_TENANT
 
-  if (shouldUseMockFallback()) {
-    return NextResponse.json({
-      content: dataStore.leadership || defaultLeadershipContent,
-    })
-  }
+ 
+   if (isMongoDBConfigured()) {
+     try {
+       await connectToDatabase()
+ 
+       const pageContent = await PageContent.findOne({ tenantSlug: tenant, pageType: "leadership" }).lean()
+ 
+       if (pageContent && pageContent.content && Object.keys(pageContent.content).length > 0) {
+         return NextResponse.json({ content: pageContent.content })
+       }
+     } catch (error) {
+       console.error("MongoDB about content fetch error:", error)
+     }
+   }
 
-  if (!isMongoDBConfigured()) {
-    return handleDatabaseUnavailable()
-  }
-
-  try {
-    await connectToDatabase()
-
-    const pageContent = await PageContent.findOne({
-      tenant,
-      pageType: "leadership",
-    }).lean()
-
-    if (pageContent && pageContent.content) {
-      return NextResponse.json({ content: pageContent.content })
-    }
-
-    // Return default content if no database entry exists
-    return NextResponse.json({ content: defaultLeadershipContent })
-  } catch (error) {
-    console.error("Error fetching leadership content:", error)
-    return NextResponse.json({ content: defaultLeadershipContent })
-  }
 }
 
 export async function PUT(request: NextRequest) {
-  const tenant = request.nextUrl.searchParams.get("tenant") || DEFAULT_TENANT
+  const { searchParams } = new URL(request.url)
+  const tenant = searchParams.get("tenant") || DEFAULT_TENANT
 
-  if (shouldUseMockFallback()) {
-    const { content } = await request.json()
-    dataStore.leadership = content
-    return NextResponse.json({ success: true })
-  }
+  // if (shouldUseMockFallback()) {
+  //   return NextResponse.json({
+  //     content: dataStore.leadership || defaultLeadershipContent,
+  //   })
+  // }
 
-  if (!isMongoDBConfigured()) {
-    return handleDatabaseUnavailable()
-  }
+  // if (!isMongoDBConfigured()) {
+  //   return handleDatabaseUnavailable()
+  // }
 
   try {
-    await connectToDatabase()
+      const { content } = await request.json()
 
-    const { content } = await request.json()
+    if (isMongoDBConfigured()) {
+      try {
+        await connectToDatabase()
+        await PageContent.findOneAndUpdate(
+          { tenantSlug: tenant, pageType: "leadership" },
+          { tenantSlug: tenant, pageType: "leadership", content, isActive: true },
+          { upsert: true, new: true },
+        )
+        return NextResponse.json({ success: true, content })
+      } catch (error) {
+        console.error("MongoDB about content update error:", error)
+      }
+    }
 
-    await PageContent.findOneAndUpdate(
-      { tenant, pageType: "leadership" },
-      {
-        $set: {
-          tenant,
-          pageType: "leadership",
-          content,
-          updatedAt: new Date(),
-        },
-      },
-      { upsert: true, new: true }
-    )
-
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true, content })
   } catch (error) {
-    console.error("Error updating leadership content:", error)
-    return NextResponse.json({ success: false, error: "Failed to update content" }, { status: 500 })
+    console.error("Error fetching leadership content:", error)
+    return NextResponse.json({ success: false, error: "Failed to fetch content" }, { status: 500 })
   }
 }

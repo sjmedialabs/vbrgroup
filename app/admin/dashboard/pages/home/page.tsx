@@ -512,7 +512,7 @@ export default function HomePageAdmin() {
                   />
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 hidden">
                 <Label>Subtitle</Label>
                 <Input
                   value={content?.about?.subtitle || ""}
@@ -790,7 +790,7 @@ export default function HomePageAdmin() {
                   />
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 hidden">
                 <Label>Description</Label>
                 <Textarea
                   value={content?.sustainability?.description || ""}
@@ -815,7 +815,7 @@ export default function HomePageAdmin() {
                 tenant={currentWebsite.slug}
               />
               <div className="space-y-2">
-                <Label>Video URL (YouTube/Vimeo embed)</Label>
+                <Label>Video URL (YouTube/Video embed)</Label>
                 <Input
                   value={content?.sustainability?.videoUrl || ""}
                   onChange={(e) =>
@@ -894,6 +894,26 @@ export default function HomePageAdmin() {
                       placeholder="e.g. Years of Experience"
                     />
                   </div>
+                  <div className="space-y-2">
+                        <ImageUploadField
+                          label="Icon Image"
+                          value={content?.sustainability?.stats?.icon || ""}
+                            onChange={(url) =>
+                        setContent((prev) =>
+                          prev
+                            ? {
+                              ...prev,
+                              sustainability: {
+                                ...prev.sustainability,
+                                stats: { ...(prev.sustainability.stats || {}), icon: url },
+                              },
+                            }
+                            : prev,
+                        )
+                      }
+                          tenant={currentWebsite.slug}
+                        />
+                      </div>
                 </div>
               </div>
 

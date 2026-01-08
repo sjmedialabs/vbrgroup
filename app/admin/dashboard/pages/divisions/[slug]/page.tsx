@@ -100,7 +100,7 @@ export default function DivisionDetailEditor() {
     try {
       setSaving(true)
       const response = await fetch(
-        `/api/pages/divisions/${slug}/content?tenant=${currentWebsite.slug}`,
+        `/api/pages/divisions/${slug}/content?tenant=${currentWebsite?.slug}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -233,18 +233,18 @@ export default function DivisionDetailEditor() {
     )
   }
 
-  if (!content) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-muted-foreground mb-4">Division not found</p>
-          <Button onClick={() => router.push("/admin/dashboard/pages/divisions")}>
-            Back to Divisions
-          </Button>
-        </div>
-      </div>
-    )
-  }
+  // if (!content) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       <div className="text-center">
+  //         <p className="text-muted-foreground mb-4">Division not found</p>
+  //         <Button onClick={() => router.push("/admin/dashboard/pages/divisions")}>
+  //           Back to Divisions
+  //         </Button>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="space-y-6 p-6">
@@ -286,7 +286,7 @@ export default function DivisionDetailEditor() {
                 <Label htmlFor="hero-title">Title</Label>
                 <Textarea
                   id="hero-title"
-                  value={content.hero.title}
+                  value={content?.hero?.title || ""}
                   onChange={(e) => updateHero("title", e.target.value)}
                   rows={3}
                   placeholder="Enter hero title"
@@ -298,7 +298,7 @@ export default function DivisionDetailEditor() {
                 <Label htmlFor="hero-subtitle">Subtitle</Label>
                 <Textarea
                   id="hero-subtitle"
-                  value={content.hero.subtitle}
+                  value={content?.hero?.subtitle || ""}
                   onChange={(e) => updateHero("subtitle", e.target.value)}
                   rows={2}
                   placeholder="Enter hero subtitle"
@@ -308,7 +308,7 @@ export default function DivisionDetailEditor() {
               <div>
                 <Label>Background Image</Label>
                 <ImageUploadField
-                  value={content.hero.backgroundImage}
+                  value={content?.hero?.backgroundImage || ""}
                   onChange={(value) => updateHero("backgroundImage", value)}
                   label="Upload background image"
                 />
@@ -328,7 +328,7 @@ export default function DivisionDetailEditor() {
                 <Label htmlFor="about-badge">Badge</Label>
                 <Input
                   id="about-badge"
-                  value={content.about.badge}
+                  value={content?.about?.badge || ""}
                   onChange={(e) => updateAbout("badge", e.target.value)}
                   placeholder="e.g., About KISAN PLANTIQ"
                 />
@@ -338,7 +338,7 @@ export default function DivisionDetailEditor() {
                 <Label htmlFor="about-title">Title</Label>
                 <Textarea
                   id="about-title"
-                  value={content.about.title}
+                  value={content?.about?.title || ""}
                   onChange={(e) => updateAbout("title", e.target.value)}
                   rows={2}
                   placeholder="Enter about title"
@@ -354,7 +354,7 @@ export default function DivisionDetailEditor() {
                   </Button>
                 </div>
 
-                {content.about.description.map((para, index) => (
+                {(content?.about?.description || []).map((para, index) => (
                   <div key={index} className="flex gap-2">
                     <Textarea
                       value={para}
@@ -388,7 +388,7 @@ export default function DivisionDetailEditor() {
                 <Label htmlFor="services-badge">Badge</Label>
                 <Input
                   id="services-badge"
-                  value={content.services.badge}
+                  value={content?.services?.badge || ""}
                   onChange={(e) => updateServices("badge", e.target.value)}
                   placeholder="e.g., Our Services"
                 />
@@ -398,7 +398,7 @@ export default function DivisionDetailEditor() {
                 <Label htmlFor="services-title">Title</Label>
                 <Textarea
                   id="services-title"
-                  value={content.services.title}
+                  value={content?.services?.title || ""}
                   onChange={(e) => updateServices("title", e.target.value)}
                   rows={3}
                   placeholder="Enter services title"
@@ -410,7 +410,7 @@ export default function DivisionDetailEditor() {
                 <Label htmlFor="services-subtitle">Subtitle</Label>
                 <Textarea
                   id="services-subtitle"
-                  value={content.services.subtitle}
+                  value={content?.services?.subtitle || ""}
                   onChange={(e) => updateServices("subtitle", e.target.value)}
                   rows={2}
                   placeholder="Enter services subtitle"
@@ -427,7 +427,7 @@ export default function DivisionDetailEditor() {
             </Button>
           </div>
 
-          {content.services.tabs.map((tab, tabIndex) => (
+          {(content?.services?.tabs || []).map((tab, tabIndex) => (
             <Card key={tab.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">

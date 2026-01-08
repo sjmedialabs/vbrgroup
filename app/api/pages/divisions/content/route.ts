@@ -26,33 +26,13 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    await connectToDatabase()
-
-    const [pageContent, divisions] = await Promise.all([
-      PageContent.findOne({ tenantSlug: tenant, pageType: "divisions" }).lean(),
-      Division.find({ tenantSlug: tenant, $or: [{ isActive: true }, { isActive: null }] }).sort({ order: 1 }).lean(),
-    ])
-
-    // If no page content exists, create default with divisions from DB
-    let content = pageContent?.content as typeof defaultDivisionsContent
-
-    if (!content) {
-      content = { ...defaultDivisionsContent }
-    }
-
-    // Always use divisions from database
-    content.divisions = divisions.map((d) => ({
-      id: d._id.toString(),
-      name: d.name,
-      subtitle: d.subtitle || "",
-      description: d.description || "",
-      image: d.cardImage || d.heroImage || "",
-      logo: d.cardImage || "",
-      link: `/divisions/${d.slug}`,
-      features: d.features || [],
-    }))
-
-    return NextResponse.json({ content }, { headers: { "Cache-Control": "no-store, max-age=0" } })
+  await connectToDatabase()
+  
+        const pageContent = await PageContent.findOne({ tenantSlug: tenant, pageType: "divisions" }).lean()
+  
+        if (pageContent && pageContent.content && Object.keys(pageContent.content).length > 0) {
+          return NextResponse.json({ content: pageContent.content })
+        }
   } catch (error) {
     console.error("MongoDB divisions content fetch error:", error)
     return NextResponse.json(

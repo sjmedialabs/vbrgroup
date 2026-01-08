@@ -228,7 +228,7 @@ export function AdminSidebar() {
 
                   {divisions.map((division) => (
                     <Link
-                      key={division.id}
+                      key={division.id || division.slug}
                       href={`/admin/dashboard/pages/divisions/${division.slug}`}
                       className={cn(
                         "block px-3 py-2 rounded-lg text-sm transition-colors truncate",
