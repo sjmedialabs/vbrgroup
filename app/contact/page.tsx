@@ -5,7 +5,7 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import Image from "next/image"
 import Link from "next/link"
-import { Facebook, Instagram, Linkedin, Youtube } from "lucide-react"
+import { Facebook, Instagram, Linkedin, Youtube, X } from "lucide-react"
 
 // Twitter/X icon component
 const XIcon = () => (
@@ -90,6 +90,94 @@ function OfficeCard({ office }: { office: ContactContent["officeAddresses"]["off
     </div>
   )
 }
+
+function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
+    subject: "",
+    message: "",
+  })
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
+
+  if (!isOpen) return null
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus("submitting")
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, source: "contact-popup" }),
+      })
+
+      if (res.ok) {
+        setStatus("success")
+        setTimeout(() => {
+          onClose()
+          setStatus("idle")
+          setFormData({ name: "", email: "", phone: "", company: "", subject: "", message: "" })
+        }, 3000)
+      } else {
+        setStatus("error")
+      }
+    } catch (error) {
+      setStatus("error")
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg relative overflow-hidden">
+        <button onClick={onClose} className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors">
+          <X className="w-6 h-6 text-gray-500" />
+        </button>
+
+        <div className="p-8">
+          <h2 className="text-2xl font-bold mb-6 text-[#4a8c3f]">Enquiry Now</h2>
+
+          {status === "success" ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Thank You!</h3>
+              <p className="text-gray-600">We have received your enquiry and will get back to you soon.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" name="name" placeholder="Name *" required value={formData.name} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4a8c3f] focus:border-transparent outline-none transition-all" />
+                <input type="email" name="email" placeholder="Email *" required value={formData.email} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4a8c3f] focus:border-transparent outline-none transition-all" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="tel" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4a8c3f] focus:border-transparent outline-none transition-all" />
+                <input type="text" name="company" placeholder="Company" value={formData.company} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4a8c3f] focus:border-transparent outline-none transition-all" />
+              </div>
+              <input type="text" name="subject" placeholder="Subject *" required value={formData.subject} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4a8c3f] focus:border-transparent outline-none transition-all" />
+              <textarea name="message" placeholder="Message *" required rows={4} value={formData.message} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4a8c3f] focus:border-transparent outline-none transition-all resize-none" />
+
+              {status === "error" && <p className="text-red-500 text-sm text-center">Failed to submit. Please try again.</p>}
+
+              <button type="submit" disabled={status === "submitting"} className="w-full bg-[#4a8c3f] text-white font-semibold py-3 rounded-lg hover:bg-[#3d7a32] transition-colors disabled:opacity-70 disabled:cursor-not-allowed">{status === "submitting" ? "Submitting..." : "Submit Enquiry"}</button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const defaultContactContent = {
   hero: {
     title: "Let's Build the Future Together",
@@ -165,6 +253,7 @@ const defaultContactContent = {
 export default function ContactPage() {
   const [content, setContent] = useState<ContactContent | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
     async function fetchContent() {
@@ -225,12 +314,15 @@ export default function ContactPage() {
           <h1 className="text-3xl md:text-5xl text-white">{content.hero.title}</h1>
         </div>
         {/* QR Code placeholder in bottom right */}
-        <div className="absolute bottom-4 right-4 bg-white rounded-full p-3 shadow-lg">
+        <button
+          onClick={() => setShowModal(true)}
+          className="absolute bottom-4 right-4 bg-white rounded-full p-3 shadow-lg hover:scale-105 transition-transform cursor-pointer z-10"
+        >
           <div className=" flex flex-col items-center justify-center">
-           <Image src="/images/enquiry.png" alt="Enquiry" width={24} height={24} className="w-8 h-8" />
-           <p className="text-[6px]">Enquiry Now</p>
+            <Image src="/images/enquiry.png" alt="Enquiry" width={24} height={24} className="w-8 h-8" />
+            <p className="text-[6px] font-bold mt-1">Enquiry Now</p>
           </div>
-        </div>
+        </button>
       </section>
 
       {/* Phone Bar */}
@@ -328,6 +420,8 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
+      <ContactModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
       <Footer />
     </>
