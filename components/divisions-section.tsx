@@ -34,7 +34,7 @@ export default function DivisionsSection() {
       subtitle: "Description here",
       link: "#",
     },
-        {
+    {
       id: 3,
       image: "/images/kisan-plantiq.png",
       name: "Kisan Plantiq",
@@ -71,20 +71,20 @@ export default function DivisionsSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-24 bg-[var(--divisions-bg)]" id="divisions"
-    style={
-      {
-        backgroundImage: backgroundImage ? `url('${backgroundImage}')` : undefined,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }
-    }>
+    <section ref={sectionRef} className="py-12 lg:py-24 bg-[var(--divisions-bg)]" id="divisions"
+      style={
+        {
+          backgroundImage: backgroundImage ? `url('${backgroundImage}')` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }
+      }>
       <div className="max-w-300 mx-auto px-5">
         <div className="flex flex-col lg:flex-row justify-center gap-4 items-center">
           {/* Info */}
-          <div className="animate-on-scroll basis-1/2">
+          <div className="animate-on-scroll lg:basis-1/2 text-center lg:text-start">
             <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white px-4 py-1 rounded-full text-lg font-bold mb-4">
-             <span className="w-1.5 h-1.5 bg-white rounded-full" />
+              <span className="w-1.5 h-1.5 bg-white rounded-full" />
               {badge}
             </span>
             <h2 className="text-3xl font-bold mb-5 whitespace-pre-line">{title.replace(". ", ".\n")}</h2>
@@ -98,9 +98,13 @@ export default function DivisionsSection() {
           </div>
 
           {/* Cards */}
-          <div className="flex flex-wrap gap-3 justify-center items-center animate-on-scroll basis-1/2">
-            {divisions.map((division: any) => (
-              <Link href={division.link || "#"} key={division.id} className="text-center w-50 group bg-white border border-gray-200 rounded-2xl p-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full lg:w-1/2">
+            {divisions.slice(0, 4).map((division: any) => (
+              <Link
+                href={division.link || "#"}
+                key={division.id}
+                className="group block w-full text-center bg-white border border-gray-200 rounded-2xl p-2"
+              >
                 <div className="w-full h-37.5 mx-auto mb-4 rounded-2xl overflow-hidden">
                   <Image
                     src={division.image || "/placeholder.svg"}
@@ -110,11 +114,17 @@ export default function DivisionsSection() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <h4 className="text-base font-semibold text-[var(--primary-green)] mb-1">{division.name}</h4>
-                <p className="text-xs opacity-70 whitespace-pre-line">{division.subtitle}</p>
+
+                <h4 className="text-base font-semibold text-[var(--primary-green)] mb-1">
+                  {division.name}
+                </h4>
+                <p className="text-xs opacity-70 whitespace-pre-line">
+                  {division.subtitle}
+                </p>
               </Link>
             ))}
           </div>
+
         </div>
       </div>
     </section>

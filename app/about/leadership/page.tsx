@@ -52,7 +52,7 @@ export default function LeadershipPage() {
       </section>
 
       {/* Main Content Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-12 lg:py-24">
         <div className="max-w-300 mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Left - Text Content */}
@@ -71,7 +71,7 @@ export default function LeadershipPage() {
               {/* Paragraphs */}
               <div className="space-y-4">
                 {content?.content.paragraphs.map((paragraph, index) => (
-                  <p key={index} className="text-[var(--text-gray)] leading-relaxed text-justify">
+                  <p key={index} className="text-[var(--text-gray)] md:leading-relaxed text-justify">
                     {paragraph}
                   </p>
                 ))}

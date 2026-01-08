@@ -60,9 +60,9 @@ export default function SustainabilityPage() {
       </section>
 
       {/* Content Sections */}
-      <div className="py-16 md:py-24">
+      <div className="py-0 lg:py-24">
         {content?.sections?.map((section, index) => (
-          <section key={section.id} className={`py-12 md:py-16 ${index % 2 === 1 ? "bg-white" : "bg-white"}`}>
+          <section key={section.id} className={`py-6 lg:py-16 ${index % 2 === 1 ? "bg-white" : "bg-white"}`}>
             <div className="max-w-[1200px] mx-auto px-5">
               <div
                 className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${

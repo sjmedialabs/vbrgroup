@@ -39,14 +39,14 @@ export default function Header() {
   const navigation = navData?.navigation
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "p-0" : "p-4 px-8"}`}>
+    <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "p-0" : "p-0 lg:p-4 lg:px-8"}`}>
       <header
         className={`bg-white shadow-lg transition-all duration-300 ${
-          isScrolled ? "rounded-none" : "rounded-[20px] max-w-[1400px] mx-auto"
+          isScrolled ? "rounded-none" : "rounded-none lg:rounded-[20px] max-w-[1400px] mx-auto"
         }`}
       >
-        <div className="max-w-341.5 mx-auto px-6">
-          <div className="grid-cols-12 items-center h-[100px] w-full grid">
+        <div className="max-w-341.5 mx-auto px-6 py-3 lg:py-0">
+          <div className="grid-cols-12 items-center lg:h-[100px] w-full grid">
             {/* Brand - Logo on left */}
             <div className="col-span-4 lg:col-span-2">  
             <Link href="/" className="flex items-center gap-3">
@@ -59,7 +59,7 @@ export default function Header() {
               />
             </Link>
             </div>
-            <div className="flex justify-end lg:justify-center col-span-7 lg:col-span-10 xl:col-span-9">
+            <div className="flex justify-end lg:justify-center col-span-8 lg:col-span-10 xl:col-span-9">
             {/* Navigation - Right side */}
             <nav className="hidden lg:flex items-center gap-6 xl:gap-8 lg:justify-around">
               {navigation?.items.map((item) => (
@@ -104,12 +104,13 @@ export default function Header() {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4">
+            <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 lg:py-0">
               <nav className="flex flex-col">
                 {navigation?.items.map((item) => (
                   <div key={item.id}>
                     {item.children && item.children.length > 0 ? (
                       <>
+                      
                         <button
                           className={`w-full px-5 py-3 text-sm font-medium flex items-center justify-between ${
                             pathname === item.url || pathname.startsWith(item.url + "/")
@@ -118,7 +119,8 @@ export default function Header() {
                           }`}
                           onClick={() => setOpenMobileDropdown(openMobileDropdown === item.id ? null : item.id)}
                         >
-                          {item.label}
+                          <Link href={item.url}>
+                          {item.label}</Link>
                           <ChevronDown
                             className={`w-4 h-4 transition-transform ${openMobileDropdown === item.id ? "rotate-180" : ""}`}
                           />

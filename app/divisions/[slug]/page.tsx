@@ -141,8 +141,8 @@ export default function DivisionDetailPage() {
       </section>
 
       {/* About Section */}
-      <section className="py-16 md:py-20 bg-[#f8f8f8]">
-        <div className="container mx-auto px-4 max-w-6xl">
+      <section className="py-12 lg:py-20 bg-[#f8f8f8]">
+        <div className="container mx-auto px-4 max-w-6xl flex flex-col justify-start md:justify-center md:items-center md:text-center items-start text-start">
           {/* Badge */}
           <div className="flex mb-6">
             <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-sm font-medium px-4 py-2 rounded-full">
@@ -157,7 +157,7 @@ export default function DivisionDetailPage() {
           </h2>
 
           {/* Description Paragraphs */}
-          <div className="space-y-4 text-gray-600 leading-relaxed max-w-4xl">
+          <div className="space-y-4 text-gray-600 leading-relaxed">
             {content.about.description.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
@@ -166,27 +166,26 @@ export default function DivisionDetailPage() {
       </section>
 
       {/* Services Section */}
-      <section className="py-16 md:py-20">
+      <section className="py-12 lg:py-20">
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Services Header */}
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-12">
-            <div>
-              {/* Badge */}
+                        {/* Badge */}
               <div className="flex mb-4">
                 <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-sm font-medium px-4 py-2 rounded-full">
                   <span className="w-2 h-2 bg-white rounded-full"></span>
                   {content.services.badge}
                 </span>
               </div>
-
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-12">
+            <div className="lg:border-r lg:border-gray-200">
               {/* Title */}
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 whitespace-pre-line leading-tight">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 lg:whitespace-pre-line leading-tight">
                 {content.services.title}
               </h2>
             </div>
 
             {/* Subtitle */}
-            <p className="text-gray-600 max-w-md lg:text-right">{content.services.subtitle}</p>
+            <p className="text-gray-600 lg:max-w-md lg:text-right">{content.services.subtitle}</p>
           </div>
 
           {/* Tabs Navigation with Arrows */}
@@ -220,7 +219,7 @@ export default function DivisionDetailPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(index)}
-                    className={`pb-4 text-sm font-medium whitespace-nowrap transition-colors relative flex-shrink-0 ${
+                    className={`pb-4 text-sm font-medium lg:whitespace-nowrap transition-colors relative flex-shrink-0 ${
                       activeTab === index ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
@@ -242,7 +241,7 @@ export default function DivisionDetailPage() {
               </span>
 
               {/* Heading */}
-              <h3 className="text-2xl md:text-3xl font-bold text-[#2d8a39] whitespace-pre-line leading-tight mb-6">
+              <h3 className="text-2xl md:text-3xl font-bold text-[#2d8a39] lg:whitespace-pre-line leading-tight mb-6">
                 {currentService.heading}
               </h3>
 

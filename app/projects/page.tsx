@@ -92,7 +92,7 @@ export default function ProjectsPage() {
       </section>
 
       {/* Introduction Section */}
-      <section className="py-16 px-4">
+      <section className="py-12 lg:py-16 px-4">
         <div className="container mx-auto max-w-5xl text-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-base font-bold px-4 py-1 rounded-full mb-8">

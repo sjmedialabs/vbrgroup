@@ -54,7 +54,7 @@ export default function CareersPage() {
       </section>
 
       {/* Job Listings */}
-      <section className="py-16 md:py-24">
+      <section className="py-12 lg:py-24">
         <div className="max-w-[900px] mx-auto px-5">
           {/* Section Header */}
           <div className="text-center mb-12">
@@ -93,10 +93,10 @@ function JobRow({ job, isLast }: { job: JobOpening; isLast: boolean }) {
 
   return (
     <div
-      className={`flex flex-col md:flex-row md:items-center justify-between gap-4 py-6 ${!isLast ? "border-b border-border" : ""}`}
+      className={`flex flex-col md:flex-row md:items-center justify-between py-6 ${!isLast ? "border-b border-border" : ""}`}
     >
       {/* Left side - Type badge and Title */}
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:basis-3/5 lg:2/3">
         <span className="inline-flex items-center justify-center bg-muted text-foreground text-sm font-medium px-5 py-2 rounded-full min-w-[100px]">
           {job.type}
         </span>
@@ -104,7 +104,7 @@ function JobRow({ job, isLast }: { job: JobOpening; isLast: boolean }) {
       </div>
 
       {/* Right side - Location and Apply button */}
-      <div className="flex items-center gap-6 md:gap-8">
+      <div className="flex items-center justify-between gap-6 md:gap-0 lg:gap-8 md:basis-2/5 lg:1/3">
         <div className="flex items-center gap-2 text-muted-foreground">
           <Image src="/images/location-pin-svgrepo.png" alt="Location" width={18} height={18} />
           <span className="text-sm">{job.location}</span>

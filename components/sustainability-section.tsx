@@ -50,9 +50,9 @@ export default function SustainabilitySection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-24" id="sustainability">
+    <section ref={sectionRef} className="py-12 lg:py-24" id="sustainability">
       <div className="max-w-[1200px] mx-auto px-5">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-16 items-center">
           {/* Content */}
           <div className="animate-on-scroll">
             <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white px-4 py-1 rounded-full text-lg font-bold mb-4">
@@ -89,11 +89,11 @@ export default function SustainabilitySection() {
 
           {/* Images */}
           <div className="relative h-112.5 animate-on-scroll">
-            <div className="absolute top-0 right-2 w-full lg:w-120 h-72 rounded-2xl overflow-hidden shadow-lg">
+            <div className="absolute hidden md:block top-0 md:right-10 lg:right-2 w-full md:w-140 lg:w-120 h-80 lg:h-72 rounded-2xl overflow-hidden shadow-lg">
              <Image src={mainImage || "/placeholder.svg"} alt="Green field" fill className="object-cover" />
             </div>
 
-            <div className="absolute top-50 md:top-30 -left-2 lg:-left-16 xl:left-0 w-60 h-70 rounded-2xl overflow-hidden shadow-lg">
+            <div className="absolute top-0 md:top-50 lg:top-40 left-0 md:left-4 lg:-left-16 xl:left-0 w-full md:w-60 h-70 rounded-2xl overflow-hidden shadow-lg">
                <Image src={getYoutubeThumbnail(videoUrl)} alt="Video thumbnail" fill className="object-cover" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-15 h-15 bg-white rounded-full flex items-center justify-center cursor-pointer shadow-xl">
                 <svg width="20" height="20" viewBox="0 0 24 24" className="fill-[var(--primary-green)] ml-1">
@@ -102,13 +102,13 @@ export default function SustainabilitySection() {
               </div>
             </div>
 
-            <div className="absolute bottom-12.5 -right-2 md:right-5 bg-white p-5 rounded-2xl shadow-lg text-center w-40">
+            <div className="absolute bottom-12.5 md:bottom-0 lg:bottom-12.5 right-5 md:right-20 lg:right-5 bg-white p-5 rounded-2xl shadow-lg text-center w-50">
               <Image
-                src="/images/smart-tech.png"
+                src={stats.badge?.icon || "/images/smart-tech.png"}
                 alt="Badge"
                 width={50}
                 height={50}
-                className="w-12.5 h-12.5 mx-auto mb-2"
+                className="w-14 h-16 mx-auto mb-2"
               />
               <h5 className="text-4xl font-extrabold text-[var(--primary-green)]">{stats.value}</h5>
               <p className="text-sm font-medium mt-1">{stats.label}</p>

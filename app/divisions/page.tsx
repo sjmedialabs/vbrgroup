@@ -77,7 +77,7 @@ export default function DivisionsPage() {
       </section>
 
       {/* Divisions Content */}
-      <section className="py-16 md:py-24">
+      <section className="py-12 lg:py-24">
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Badge */}
           <div className="flex justify-center mb-6">

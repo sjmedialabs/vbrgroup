@@ -219,8 +219,8 @@ export default function ContactPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-[350px] md:h-[400px] overflow-hidden">
-        <Image src="/images/contact-banner.png" alt="Contact Us" fill className="object-cover" />
+      <section className="relative h-[350px] md:h-[400px] overflow-hidden flex justify-center items-center text-center">
+        <Image src={content.hero.backgroundImage || "/images/contact-hero.jpg"} alt="Contact Us" fill className="object-cover" />
         <div className="absolute inset-0 flex items-center justify-center">
           <h1 className="text-3xl md:text-5xl text-white">{content.hero.title}</h1>
         </div>
@@ -246,7 +246,7 @@ export default function ContactPage() {
       </section>
 
       {/* Office Addresses */}
-      <section className="py-16 px-5 bg-[#f5f5f5]">
+      <section className="py-8 lg:py-16 px-5 bg-[#f5f5f5]">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-medium text-center mb-12">{content.officeAddresses.title}</h2>
 

@@ -73,7 +73,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Services Content Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 lg:py-20 bg-white">
         <div className="max-w-[1200px] mx-auto px-5">
           {/* Section Header */}
           <div className="text-center mb-16">
@@ -98,7 +98,7 @@ export default function ServicesPage() {
                 <button
                   key={service.id}
                   onClick={() => setActiveService(index)}
-                  className={`w-full max-w-md text-left px-6 py-4 rounded-lg transition-all duration-300 flex items-center gap-4 ${
+                  className={`w-full lg:max-w-md text-left px-6 py-4 rounded-lg transition-all duration-300 flex items-center gap-4 ${
                     activeService === index
                       ? "bg-[#2d8a39] text-white"
                       : "bg-white text-gray-700 border border-gray-200 hover:border-[#2d8a39]"

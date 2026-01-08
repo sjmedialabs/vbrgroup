@@ -41,15 +41,15 @@ export default function AboutSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-24 text-center" id="about">
+    <section ref={sectionRef} className="py-12 lg:py-24 text-center" id="about">
       <div className="max-w-300 mx-auto px-5">
         <p className="text-[var(--primary-green)] text-base font-medium animate-on-scroll">{badge}</p>
         <h2 className="text-4xl font-bold animate-on-scroll mt-1">{title}</h2>
-        <p className="max-w-280 text-[var(--text-gray)] leading-relaxed text-2xl mt-1 animate-on-scroll">
+        <p className="max-w-180 lg:max-w-280 text-[var(--text-gray)] leading-relaxed text-xl lg:text-2xl mt-1">
           {description}
         </p>
 
-        <div className="flex flex-wrap justify-center gap-12 md:gap-16 mb-4 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 justify-center gap-12 md:gap-16 mb-4 mt-8">
           {features.map((feature: any, index: number) => (
             <div key={feature.id} className="flex flex-row justify-center items-center gap-4">
               <div className="flex flex-col items-center gap-3">
@@ -63,7 +63,7 @@ export default function AboutSection() {
                 {feature.title && <span className="text-lg font-bold text-[var(--text-dark)]">{feature.title}</span>}
                 <span className="text-[13px] text-[var(--text-gray)]">{feature.description}</span>
               </div>
-              {index !== features.length - 1 && <div className="h-20 w-px bg-gray-200"></div>}
+              {index !== features.length - 1 && <div className="h-20 w-px bg-gray-200 hidden lg:block"></div>}
             </div>
           ))}
         </div>

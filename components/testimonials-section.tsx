@@ -45,7 +45,7 @@ export default function TestimonialsSection() {
   }
 
   return (
-    <section ref={sectionRef} className="py-24">
+    <section ref={sectionRef} className="py-12 lg:py-24">
       <div className="max-w-300 mx-auto px-5">
         <div className="mb-10">
           <p className="text-[var(--primary-green)] text-sm font-medium mb-2">{badge}</p>

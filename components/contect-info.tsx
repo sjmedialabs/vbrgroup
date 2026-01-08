@@ -14,7 +14,7 @@ export default function ContactInfoSection() {
     if (!contact) return null
 
     return (
-        <section className="py-20">
+        <section className="py-12 lg:py-20">
             <div className="max-w-300 mx-auto px-5">
                 <div
                     className="relative rounded-4xl overflow-hidden"
@@ -26,7 +26,7 @@ export default function ContactInfoSection() {
                 >
 
                     {/* Content */}
-                    <div className="relative z-10 flex flex-wrap lg:flex-nowrap lg:flex-row gap-4 md:justify-center items-center px-16 py-20 text-white">
+                    <div className="relative z-10 flex flex-wrap md:flex-nowrap md:flex-row gap-4 md:justify-between items-center px-8 lg:px-16 py-20 text-white">
 
                         {/* EMAILS */}
                         <div className="flex gap-4 items-start md:basis-1/4">
@@ -46,10 +46,10 @@ export default function ContactInfoSection() {
                                 ))}
                             </div>
                         </div>
-                        <div className=" basis-1/8 md:flex justify-center hidden items-center">
+                        <div className=" basis-1/8 lg:flex justify-center hidden items-center">
                             <div className="h-20 w-px bg-gray-400 "></div></div>
                         {/* PHONES */}
-                        <div className="flex gap-4 items-start md:px-8 md:basis-1/4">
+                        <div className="flex gap-4 items-start xl:px-8 md:basis-1/4">
                             <div>
                                 <h4 className="font-semibold text-lg mb-1 flex flex-row items-center gap-1"><Image
                                     src="/images/contacthead.png"
@@ -65,8 +65,8 @@ export default function ContactInfoSection() {
                                 ))}
                             </div>
                         </div>
-                        <div className=" basis-1/8 md:flex justify-center hidden items-center">
-                            <div className="h-20 w-px bg-gray-400  md:block"></div></div>
+                        <div className=" basis-1/8 lg:flex justify-center hidden items-center">
+                            <div className="h-20 w-px bg-gray-400  lg:block"></div></div>
                         {/* ADDRESS */}
                         <div className="flex gap-4 items-start md:basis-1/4">
                             <div>

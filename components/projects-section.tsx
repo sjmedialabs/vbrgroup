@@ -53,7 +53,7 @@ export default function ProjectsSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-24 bg-[var(--bg-cream)]" id="projects">
+    <section ref={sectionRef} className="py-12 lg:py-24 bg-[var(--bg-cream)]" id="projects">
       <div className="max-w-[1200px] mx-auto px-5">
         <span className="inline-flex items-center gap-2 bg-[var(--primary-green)] text-white px-4 py-1 rounded-full text-lg font-bold mb-4">
           <span className="w-1.5 h-1.5 bg-white rounded-full" />

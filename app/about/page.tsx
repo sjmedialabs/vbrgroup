@@ -110,10 +110,10 @@ export default function AboutPage() {
       <Header />
 
       {/* Hero Section with Sub-Navigation */}
-      <section className="relative h-[400px] flex flex-col">
+      <section className="relative h-[400px] flex flex-col justify-center items-center">
         <div className="absolute inset-0 z-0">
           <Image
-            src={pageContent.hero?.backgroundImage || "/images/about-hero.jpg"}
+            src={pageContent?.hero?.backgroundImage || "/images/about-hero.jpg"}
             alt="About Us"
             fill
             className="object-cover"
@@ -125,27 +125,27 @@ export default function AboutPage() {
 
         <div className="relative z-10 flex-1 flex items-center justify-center">
           <h1 className="text-5xl md:text-6xl font-light text-white">
-            {pageContent.hero?.title || "About us"}
+            {pageContent?.hero?.title || "About us"}
           </h1>
         </div>
       </section>
 
       {/* Our Story Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 lg:py-20 bg-white">
         <div className="max-w-[1200px] mx-auto px-5">
           <div className="grid grid-cols-1 gap-8 lg:gap-0 lg:grid-cols-3">
             {/* Left Column - Badge, Title, Features */}
             <div className="col-span-1">
               <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white text-base px-4 py-1 font-bold rounded-full mb-6">
                 <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                {pageContent.story?.badge || "Our Story"}
+                {pageContent?.story?.badge || "Our Story"}
               </span>
               <h2 className="text-3xl md:text-3xl font-bold text-[#1a1a1a] leading-tight mb-10">
-                {pageContent.story?.title || "Innovation, Intelligent Systems, And Sustainable Practices."}
+                {pageContent?.story?.title || "Innovation, Intelligent Systems, And Sustainable Practices."}
               </h2>
 
               <div className="grid grid-cols-3 gap-8 mt-8">
-                {(pageContent.story?.features || defaultContent.story.features).slice(0, 3).map((feature) => (
+                {(pageContent?.story?.features || defaultContent.story.features).map((feature) => (
                   <div key={feature.id} className="text-center">
                     <div className="flex flex-col items-center mb-2">
                       {feature.value && (
@@ -170,7 +170,7 @@ export default function AboutPage() {
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-8 mt-8 max-w-[280px]">
+              {/* <div className="grid grid-cols-2 gap-8 mt-8 max-w-[280px]">
                 {(pageContent.story?.features || defaultContent.story.features).slice(3, 5).map((feature) => (
                   <div key={feature.id} className="text-center">
                     <div className="flex justify-center mb-2">
@@ -187,7 +187,7 @@ export default function AboutPage() {
                     <p className="text-sm text-gray-600">{feature.label}</p>
                   </div>
                 ))}
-              </div>
+              </div> */}
             </div>
 
             {/* Right Column - Paragraphs */}
@@ -203,7 +203,7 @@ export default function AboutPage() {
       </section>
 
       {/* Info Cards Section */}
-      <section className="py-16 bg-white">
+      <section className="py-10 lg:py-16 bg-white">
         <div className="max-w-[1200px] mx-auto px-5">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {(pageContent.cards || defaultContent.cards).map((card) => (
@@ -226,11 +226,11 @@ export default function AboutPage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 lg:py-20 bg-white">
         <div className="max-w-[1200px] mx-auto px-5">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 items-center">
             {/* Left Column */}
-            <div className="col-span-2 pr-4">
+            <div className="lg:col-span-2 lg:pr-4">
               <span className="inline-flex items-center gap-2 bg-[#2d8a39] text-white font-bold text-base px-4 py-1 rounded-full mb-6">
                 <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
                 {pageContent.whyChooseUs?.badge || "Why Choose Us"}
@@ -245,7 +245,7 @@ export default function AboutPage() {
             </div>
 
             {/* Right Column - Feature Cards */}
-            <div className="grid grid-cols-1 col-span-3 sm:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:col-span-3 sm:grid-cols-2 gap-8">
               {(pageContent.whyChooseUs?.features || defaultContent.whyChooseUs.features).map((feature) => (
                 <div key={feature.id}>
                     <div className="flex flex-row gap-2 items-center">
@@ -269,12 +269,12 @@ export default function AboutPage() {
       </section>
 
       {/* Our Growth in Numbers Section */}
-      <section className="py-16">
+      <section className="py-10 lg:py-16">
         <div className="max-w-[1200px] mx-auto px-5">
           <div
             className="relative rounded-3xl overflow-hidden py-16 px-8 md:px-12"
                     style={{
-                        backgroundImage: "url('/uploads/bottomGreenImage.png')",
+                        backgroundImage: `url('${pageContent?.growth?.backgroundImage || "/images/growth-bg.jpg"}')`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                     }}
