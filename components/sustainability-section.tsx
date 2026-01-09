@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import useSWR from "swr"
@@ -9,6 +9,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function SustainabilitySection() {
   const sectionRef = useRef<HTMLDivElement>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
 
   const { data } = useSWR<{ content: any }>("/api/pages/home/content?tenant=kisan-plant-technologies", fetcher)
 
@@ -29,6 +30,13 @@ export default function SustainabilitySection() {
     return match && match[2].length === 11
       ? `https://img.youtube.com/vi/${match[2]}/hqdefault.jpg`
       : "/placeholder.svg"
+  }
+
+  const getYoutubeId = (url: string) => {
+    if (!url) return null
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+    const match = url.match(regExp)
+    return match && match[2].length === 11 ? match[2] : null
   }
 
   useEffect(() => {
@@ -93,13 +101,25 @@ export default function SustainabilitySection() {
              <Image src={mainImage || "/placeholder.svg"} alt="Green field" fill className="object-cover" />
             </div>
 
-            <div className="absolute top-0 md:top-50 lg:top-40 left-0 md:left-4 lg:-left-16 xl:left-0 w-full md:w-60 h-70 rounded-2xl overflow-hidden shadow-lg">
-               <Image src={getYoutubeThumbnail(videoUrl)} alt="Video thumbnail" fill className="object-cover" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-15 h-15 bg-white rounded-full flex items-center justify-center cursor-pointer shadow-xl">
-                <svg width="20" height="20" viewBox="0 0 24 24" className="fill-[var(--primary-green)] ml-1">
-                  <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-              </div>
+            <div className="absolute top-0 md:top-50 lg:top-40 left-0 md:left-4 lg:-left-16 xl:left-0 w-full md:w-60 h-70 rounded-2xl overflow-hidden shadow-lg bg-black">
+              {!isPlaying ? (
+                <div className="relative w-full h-full cursor-pointer group" onClick={() => setIsPlaying(true)}>
+                  <Image src={getYoutubeThumbnail(videoUrl)} alt="Video thumbnail" fill className="object-cover" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-15 h-15 bg-white rounded-full flex items-center justify-center shadow-xl transition-transform group-hover:scale-110">
+                    <svg width="20" height="20" viewBox="0 0 24 24" className="fill-[var(--primary-green)] ml-1">
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                  </div>
+                </div>
+              ) : (
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${getYoutubeId(videoUrl)}?autoplay=1`}
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              )}
             </div>
 
             <div className="absolute bottom-12.5 md:bottom-0 lg:bottom-12.5 right-5 md:right-20 lg:right-5 bg-white p-5 rounded-2xl shadow-lg text-center w-50">

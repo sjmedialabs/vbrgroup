@@ -118,7 +118,7 @@ export default function DivisionsSection() {
                 <h4 className="text-base font-semibold text-[var(--primary-green)] mb-1">
                   {division.name}
                 </h4>
-                <p className="text-xs opacity-70 whitespace-pre-line">
+                <p className="text-xs opacity-70 whitespace-pre-line line-clamp-2">
                   {division.subtitle}
                 </p>
               </Link>

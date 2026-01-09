@@ -352,15 +352,15 @@ export default function ContactPage() {
 
       {/* Contact Info Box */}
       <section className="py-8 px-5">
-        <div className="max-w-4xl mx-auto border border-gray-200 rounded-lg overflow-hidden">
+        <div className="md:max-w-4xl mx-auto border border-gray-200 rounded-lg overflow-hidden">
           {/* Media Enquiries */}
           <div className="p-6 border-b border-gray-200">
             <p className="text-lg">
               <span className="font-bold">{content.contactInfo.mediaEnquiries.label}</span>{" "}
-              <span className="text-gray-600">Email id:</span>
+              <span className="text-gray-600">Email id: </span>
               <Link
                 href={`mailto:${content.contactInfo.mediaEnquiries.email}`}
-                className="text-gray-800 hover:text-[var(--primary-green)]"
+                className="text-gray-800 md:text-lg text-base hover:text-[var(--primary-green)]"
               >
                 {content.contactInfo.mediaEnquiries.email}
               </Link>
@@ -371,7 +371,7 @@ export default function ContactPage() {
           <div className="p-6 border-b border-gray-200">
             <p className="text-lg">
               <span className="font-bold">{content.contactInfo.contactNumbers.label}</span>{" "}
-              <span className="text-gray-800">{content.contactInfo.contactNumbers.numbers.join(" , ")}</span>
+              <span className="text-gray-800 md:text-lg text-base">{content.contactInfo.contactNumbers.numbers.join(" , ")}</span>
             </p>
           </div>
 
@@ -381,13 +381,13 @@ export default function ContactPage() {
               <span className="font-bold">{content.contactInfo.emails.label}</span>{" "}
               <Link
                 href={`mailto:${content.contactInfo.emails.addresses[0]}`}
-                className="text-gray-800 hover:text-[var(--primary-green)]"
+                className="text-gray-800 md:text-lg text-base hover:text-[var(--primary-green)]"
               >
                 {content.contactInfo.emails.addresses[0]},
               </Link>
             </p>
             {content.contactInfo.emails.addresses.slice(1).map((email, index) => (
-              <p key={index} className="text-lg">
+              <p key={index} className="md:text-lg text-base">
                 <Link href={`mailto:${email}`} className="text-gray-800 hover:text-[var(--primary-green)]">
                   {email}
                 </Link>

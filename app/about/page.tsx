@@ -279,7 +279,7 @@ export default function AboutPage() {
                         backgroundPosition: "center",
                     }}
           >
-            <div className="flex flex-col md:flex-row gap-12 items-center">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-center">
               {/* Left - Text */}
               <div className="text-white basis-2/5 pr-4">
                 <span className="inline-flex items-center font-bold gap-2 bg-white backdrop-blur-sm text-[#2d8a39] text-base px-4 py-1 rounded-full mb-4">
