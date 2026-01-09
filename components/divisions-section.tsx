@@ -91,7 +91,7 @@ export default function DivisionsSection() {
             <p className="opacity-80 text-gray-400 leading-relaxed mb-8 text-xl">{description}</p>
             <Link
               href={ctaLink}
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-[var(--primary-green)] text-white rounded-lg font-medium text-sm hover:bg-white/90 transition-all duration-300"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-[var(--primary-green)] text-white rounded-lg hover:bg-[var(--primary-green-dark)] hover:-translate-y-0.5 font-medium text-sm hover-shadow-lg  transition-all duration-300"
             >
               {ctaText}
             </Link>

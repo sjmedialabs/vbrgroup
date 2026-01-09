@@ -177,7 +177,7 @@ export default function DivisionDetailPage() {
                 </span>
               </div>
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-12">
-            <div className="lg:border-r lg:border-gray-200">
+            <div className="lg:border-r lg:border-gray-200 lg:w-1/2">
               {/* Title */}
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 lg:whitespace-pre-line leading-tight">
                 {content.services.title}
@@ -185,7 +185,7 @@ export default function DivisionDetailPage() {
             </div>
 
             {/* Subtitle */}
-            <p className="text-gray-600 lg:max-w-md lg:text-right">{content.services.subtitle}</p>
+            <p className="text-gray-600 lg:max-w-md lg:text-right lg:w-1/2">{content.services.subtitle}</p>
           </div>
 
           {/* Tabs Navigation with Arrows */}

@@ -209,6 +209,7 @@ function Dropdown({
   isDivisions?: boolean
   isAbout?: boolean
 }) {
+  const pathname = usePathname()
   const sortedItems = [...items].sort((a, b) => a.order - b.order)
 
   if (isAbout) {
@@ -222,7 +223,7 @@ function Dropdown({
               key={item.id}
               href={item.url}
               label={item.label}
-              active={item.label.toLowerCase() === "leadership"}
+              active={pathname === item.url}
             />
           ))}
         </div>
@@ -247,13 +248,13 @@ function Dropdown({
         <div className="flex gap-8 flex-1">
           <div className="flex flex-col gap-3">
             {leftColumn.map((item, index) => (
-              <DropdownLink key={item.id} href={item.url} label={item.label} active={index === 0 && isDivisions} />
+              <DropdownLink key={item.id} href={item.url} label={item.label} active={pathname === item.url} />
             ))}
           </div>
           {rightColumn.length > 0 && (
             <div className="flex flex-col gap-3">
               {rightColumn.map((item) => (
-                <DropdownLink key={item.id} href={item.url} label={item.label} />
+                <DropdownLink key={item.id} href={item.url} label={item.label} active={pathname === item.url} />
               ))}
             </div>
           )}
