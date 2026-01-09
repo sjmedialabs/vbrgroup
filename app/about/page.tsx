@@ -205,11 +205,16 @@ export default function AboutPage() {
       {/* Info Cards Section */}
       <section className="py-10 lg:py-16 bg-white">
         <div className="max-w-[1200px] mx-auto px-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-1">
             {(pageContent?.cards || []).map((card) => (
               <div
                 key={card.id}
-                className="border border-gray-200 rounded-3xl p-8 hover:shadow-lg transition-shadow duration-300"
+                className=" rounded-2xl p-8 hover:shadow-lg transition-shadow duration-300"
+                style={{
+                  backgroundImage: "url('/images/about-vission-bg.png')",
+                  backgroundSize: "100% 100%",
+                  backgroundRepeat: "no-repeat",
+                }}
               >
                 <h3 className="text-2xl font-bold text-[#2d8a39] mb-1">{card.title}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed mb-3">{card.description}</p>
