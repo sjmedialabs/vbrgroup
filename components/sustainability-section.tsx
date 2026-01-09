@@ -96,12 +96,12 @@ export default function SustainabilitySection() {
           </div>
 
           {/* Images */}
-          <div className="relative h-112.5 animate-on-scroll">
+          <div className="relative h-auto md:h-112.5 animate-on-scroll flex flex-col gap-6 md:block">
             <div className="absolute hidden md:block top-0 md:right-10 lg:right-2 w-full md:w-140 lg:w-120 h-80 lg:h-72 rounded-2xl overflow-hidden shadow-lg">
              <Image src={mainImage || "/placeholder.svg"} alt="Green field" fill className="object-cover" />
             </div>
 
-            <div className="absolute top-0 md:top-50 lg:top-40 left-0 md:left-4 lg:-left-16 xl:left-0 w-full md:w-60 h-70 rounded-2xl overflow-hidden shadow-lg bg-black">
+            <div className="relative md:absolute top-0 md:top-50 lg:top-40 left-0 md:left-4 lg:-left-16 xl:left-0 w-full md:w-60 h-70 rounded-2xl overflow-hidden shadow-lg bg-black">
               {!isPlaying ? (
                 <div className="relative w-full h-full cursor-pointer group" onClick={() => setIsPlaying(true)}>
                   <Image src={getYoutubeThumbnail(videoUrl)} alt="Video thumbnail" fill className="object-cover" />
@@ -122,7 +122,7 @@ export default function SustainabilitySection() {
               )}
             </div>
 
-            <div className="absolute bottom-12.5 md:bottom-0 lg:bottom-12.5 right-5 md:right-20 lg:right-5 bg-white p-5 rounded-2xl shadow-lg text-center w-50">
+            <div className="relative md:absolute bottom-auto md:bottom-0 lg:bottom-12.5 right-auto md:right-20 lg:right-5 bg-white p-5 rounded-2xl shadow-lg text-center w-full md:w-50">
               <Image
                 src={stats.icon || "/images/smart-tech.png"}
                 alt="Badge"

@@ -50,6 +50,45 @@ export default function ServicesPage() {
   const currentService = services[activeService]
   console.log("current service", currentService)
 
+  const renderServiceContent = (service: Service) => (
+    <div className="space-y-6">
+      {/* Service Image */}
+      <div className="relative h-[300px] rounded-2xl overflow-hidden">
+        <Image
+          src={service.image || "/images/agreeculture.png"}
+          alt={service.title}
+          fill
+          className="object-cover"
+        />
+      </div>
+
+      {/* Service Title & Description */}
+      <div>
+        <h3 className="text-2xl font-bold text-[#2d8a39] mb-1">{service.title}</h3>
+        <p className="text-gray-600 leading-relaxed">{service.description}</p>
+      </div>
+
+      {/* Service Tags */}
+      {service.tags && service.tags.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {service.tags.map((tag, idx) => {
+            const tagLabel = typeof tag === "string" ? tag : tag.label
+            const tagIcon = typeof tag === "string" ? null : tag.icon
+            return (
+              <div key={idx} className="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-200">
+                <div className="rounded-full bg-[#2d8a39] p-1">
+                  {tagIcon && (
+                    <Image src={tagIcon || "/placeholder.svg"} alt={tagLabel} width={18} height={18} className="object-contain" />
+                  )}
+                </div>
+                <span className="text-sm text-gray-700">{tagLabel}</span>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
 
   return (
     <div className="min-h-screen">
@@ -95,74 +134,30 @@ export default function ServicesPage() {
             {/* Left - Service Tabs */}
             <div className="space-y-3">
               {services.map((service, index) => (
-                <button
-                  key={service.id}
-                  onClick={() => setActiveService(index)}
-                  className={`w-full lg:max-w-md text-left px-6 py-4 rounded-lg transition-all duration-300 flex items-center gap-4 ${
-                    activeService === index
-                      ? "bg-[#2d8a39] text-white"
-                      : "bg-white text-gray-700 border border-gray-200 hover:border-[#2d8a39]"
-                  }`}
-                >
-                  <span
-                    className={`text-lg font-semibold ${activeService === index ? "text-white/80" : "text-gray-500"}`}
+                <div key={service.id} className="flex flex-col">
+                  <button
+                    onClick={() => setActiveService(index)}
+                    className={`w-full lg:max-w-md text-left px-6 py-4 rounded-lg transition-all duration-300 flex items-center gap-4 ${
+                      activeService === index
+                        ? "bg-[#2d8a39] text-white"
+                        : "bg-white text-gray-700 border border-gray-200 hover:border-[#2d8a39]"
+                    }`}
                   >
-                    {service.number}
-                  </span>
-                  <span className={`text-lg font-semibold ${activeService === index ? "text-white/80" : "text-gray-500"}`}>{service.title}</span>
-                </button>
+                    <span className={`text-lg font-semibold ${activeService === index ? "text-white/80" : "text-gray-500"}`}>
+                      {service.number}
+                    </span>
+                    <span className={`text-lg font-semibold ${activeService === index ? "text-white/80" : "text-gray-500"}`}>
+                      {service.title}
+                    </span>
+                  </button>
+                  {/* Mobile Content (Accordion) */}
+                  {activeService === index && <div className="lg:hidden mt-4 mb-6 pl-2">{renderServiceContent(service)}</div>}
+                </div>
               ))}
             </div>
 
             {/* Right - Service Details */}
-            {currentService && (
-              <div className="space-y-6">
-                {/* Service Image */}
-                <div className="relative h-[300px] rounded-2xl overflow-hidden">
-                  <Image
-                    src={currentService.image || "/images/agreeculture.png"}
-                    alt={currentService.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                {/* Service Title & Description */}
-                <div>
-                  <h3 className="text-2xl font-bold text-[#2d8a39] mb-1">{currentService.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{currentService.description}</p>
-                </div>
-
-                {/* Service Tags */}
-                {currentService.tags && currentService.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-3">
-                    {currentService.tags.map((tag, idx) => {
-                      console.log("current tag", tag)
-                      const tagLabel = typeof tag === "string" ? tag : tag.label
-                      const tagIcon = typeof tag === "string" ? null : tag.icon
-                      return (
-                        <div
-                          key={idx}
-                          className="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-200"
-                        >
-                          <div className="rounded-full bg-[#2d8a39] p-1">
-                          {tagIcon && (
-                            <Image
-                              src={tagIcon || "/placeholder.svg"}
-                              alt={tagLabel}
-                              width={18}
-                              height={18}
-                              className="object-contain"
-                            />
-                          )}</div>
-                          <span className="text-sm text-gray-700">{tagLabel}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="hidden lg:block">{currentService && renderServiceContent(currentService)}</div>
           </div>
         </div>
       </section>

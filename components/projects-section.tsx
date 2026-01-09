@@ -66,7 +66,7 @@ export default function ProjectsSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 mb-10">
           {projects.map((project: any, index: number) => (
             <div key={project._id || index}>
-              <div className="h-70 rounded-[12px_70px_12px_12px] overflow-hidden mb-4">
+              <div className="h-70 rounded-lg overflow-hidden mb-4">
                 <Image
                   src={project.image || "/placeholder.svg"}
                   alt={project.title}

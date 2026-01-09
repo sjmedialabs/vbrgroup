@@ -89,7 +89,7 @@ export default function TestimonialsSection() {
                     <p className="text-sm text-gray-700">{testimonial.role}</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                {/* <div className="flex gap-2">
                   <button
                     onClick={handlePrev}
                     className="w-9 h-9 flex text-gray-400 items-center justify-center hover:border-[var(--primary-green)] hover:text-[var(--primary-green)] transition-colors"
@@ -102,7 +102,7 @@ export default function TestimonialsSection() {
                   >
                     →
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           ))}
